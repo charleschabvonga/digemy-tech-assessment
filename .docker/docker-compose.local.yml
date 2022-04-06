@@ -1,0 +1,55 @@
+version: '3'
+
+networks:
+  digemy-tech-assessment:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
+
+services:
+  app:
+    build:
+      args:
+        user: digemy-tech-assessment
+        uid: 1000
+      context: ./.docker/app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+      - ./.docker/app/php.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - digemy-tech-assessment
+
+  digemy-tech-assessment-web:
+    image: nginx
+    container_name: digemy-tech-assessment
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    networks:
+      - digemy-tech-assessment
+    volumes:
+      - ./:/var/www
+      - ./.docker/nginx:/etc/nginx/conf.d
+
+
+  digemy-tech-assessment-db:
+    networks:
+      - digemy-tech-assessment
+    image: mariadb
+    container_name: digemy-tech-assessment-db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3308:3306"
+    volumes:
+      - dbdata:/var/lib/mariadb
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
