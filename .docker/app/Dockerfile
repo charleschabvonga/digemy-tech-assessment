@@ -1,4 +1,4 @@
-FROM php:8.0-fpm
+FROM php:8.1-fpm
 
 # Arguments defined in docker-compose.yml
 ARG user
@@ -31,7 +31,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get update -yq \
     && apt-get -yq install curl gnupg ca-certificates \
-    && curl -L https://deb.nodesource.com/setup_16.x | bash \
+    && curl -L https://deb.nodesource.com/setup_18.x | bash \
     && apt-get update -yq \
     && apt-get install -yq \
         nodejs
@@ -43,7 +43,7 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Get latest Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.5.7 /usr/bin/composer /usr/bin/composer
 
 # Create system user to run Composer and Artisan Commands
 RUN useradd -G www-data,root -u $uid -d /home/$user $user
