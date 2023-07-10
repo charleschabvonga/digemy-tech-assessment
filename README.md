@@ -20,9 +20,47 @@ After cloning the repository in you machine, please follow the following instruc
 
 After docker has finished building the containers, you can then install the packages.
 
-    $ docker exec -i digemy-tech-assessment-app-1 composer install
-    $ docker exec -i digemy-tech-assessment-app-1 php artisan key:generate
-    $ docker exec -i digemy-tech-assessment-app-1 php artisan optimize
-    $ docker exec -i digemy-tech-assessment-app-1 php artisan migrate
+    $ docker-compose exec app bash
+    $ composer install
+    $ php artisan migrate
+    $ php artisan db:seed
 
 The application should run on **http://localhost:8000**
+
+# Assessment
+
+### Introduction
+
+Please note that there is no wrong answer here. We want to assess how you tackle an issue, the steps you take to resolve a problem in Laravel, and how readable and robust is your code vs the business requirement. Most importantly, we also want to assess whether you can actually look at external packages, and learn and use them efficiently in our code base.
+
+### Story
+
+Let’s assume that we have a client that has an invoicing application. For the sake of this assessment, we will disregard customers and invoice line items and rather concentrate
+on the total amount of the invoice.
+
+We want to be able to change the state of an invoice based on the payment received for it.
+
+
+For example, when an invoice total amount is R100.00, and we receive a payment of R10.00, the invoice state should change from “awaiting payment” to “partially paid”.
+Similarly, when we receive an amount equal to the invoice’s total amount, its state should change to “paid in full”.
+If a payment is deleted for that invoice, we should be able to also revert the state to partially paid or awaiting payment, depending on the total payments remaining after a payment is deleted.
+
+What you will do
+
+1. Create an invoices table to hold a title, a description of the invoice, and the total amount
+2. Create a payments table where all the payments for the invoices will be logged
+3. Build a state management logic for the scenario mentioned above. We require that you make use of (https://github.com/spatie/laravel-model-states) [Spatie laravel model states).
+4. Please build a simple UI to showcase how your logic works or write tests.
+
+
+Hints
+
+* The default state of an invoice is "created"
+* We can start logging payments for the invoice only when the invoice state is changed to "awaiting-payment"
+* When a partial payment is received, the invoice state should change to "partially-paid"
+* When a full payment is received, the invoice state should change to "fully-paid"
+* When a payment is deleted, we need to revert back to "partially paid" or "awaiting payment" depending on the payment amount deleted
+
+Good luck! We look forward to seeing your work 😃.
+
+
