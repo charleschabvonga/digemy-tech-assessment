@@ -53,13 +53,17 @@ What you will do
 4. Please build a simple UI to showcase how your logic works or write tests.
 
 
-Hints
+Requirement
 
 * The default state of an invoice is "created"
 * We can start logging payments for the invoice only when the invoice state is changed to "awaiting-payment"
 * When a partial payment is received, the invoice state should change to "partially-paid"
 * When a full payment is received, the invoice state should change to "fully-paid"
 * When a payment is deleted, we need to revert back to "partially paid" or "awaiting payment" depending on the payment amount deleted
+
+**Notes**
+
+Please feel free to anticipate the constraints or business requirements that are not explicitly given in the story and/or requirements above. Feel free to implement them in the code, and explain why you felt the changes were necessary.
 
 Good luck! We look forward to seeing your work 😃.
 
