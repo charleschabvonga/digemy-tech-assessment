@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Domain\Invoices\Contracts\InvoicePaymentServiceInterface;
+use App\Domain\Invoices\Services\InvoicePaymentService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +15,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->bind(InvoicePaymentServiceInterface::class, InvoicePaymentService::class);
     }
 
     /**
