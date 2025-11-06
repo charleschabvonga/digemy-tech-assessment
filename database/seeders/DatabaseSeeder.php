@@ -2,11 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Domain\Invoices\Contracts\InvoiceServiceInterface;
 use App\Models\Invoice;
 use App\Models\Payment;
 use App\Models\User;
+use App\States\Invoice\AwaitingPayment;
+use App\States\Invoice\Created;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,53 +20,63 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // Create test user
         User::factory()->create([
-            'name' => 'Test User',
+            'firstname' => 'Test',
+            'lastname' => 'User',
             'email' => 'test@example.com',
-            'password' => Hash::make('password'),
+            'email_verified_at' => now(),
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'remember_token' => Str::random(10),
         ]);
 
-        // Create additional random users (all with password "password")
-        User::factory()->count(5)->create([
-            'password' => Hash::make('password'),
+        User::factory()->create([
+            'firstname' => 'Charles',
+            'lastname' => 'chabvonga',
+            'email' => 'charleschabvonga@gmail.com',
+            'email_verified_at' => now(),
+            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'remember_token' => Str::random(10),
         ]);
 
-        // Create 50 invoices
-        $invoices = Invoice::factory()->count(50)->create();
+        $invoices = collect();
+        for ($i = 0; $i < 50; $i++) {
+            $initialState = rand(1, 100) <= 30 ? Created::class : AwaitingPayment::class;
+            
+            $invoices->push(
+                Invoice::factory()->create(['state' => $initialState])
+            );
+        }
 
-        // Create random payments for each invoice
+        $invoiceService = app(InvoiceServiceInterface::class);
+
         foreach ($invoices as $invoice) {
-            // Random number of payments (0 to 5 payments per invoice)
+            if (!($invoice->state instanceof AwaitingPayment)) {
+                continue;
+            }
+
             $numPayments = rand(0, 5);
             
             if ($numPayments > 0) {
                 $totalAmount = (float) $invoice->total_amount;
                 $remainingAmount = $totalAmount;
                 
-                // Decide randomly if payments should fully pay the invoice (70% chance)
                 $shouldFullyPay = rand(1, 100) <= 70;
-                
-                // Create payments
+
                 for ($i = 0; $i < $numPayments; $i++) {
                     $isLastPayment = ($i === $numPayments - 1);
                     
                     if ($isLastPayment && $shouldFullyPay) {
-                        // Last payment takes the remaining amount to fully pay
                         $paymentAmount = $remainingAmount;
                     } else {
-                        // Random amount between 5% and 90% of remaining amount
                         $maxPayment = min($remainingAmount * 0.9, $remainingAmount - 0.01);
                         $minPayment = max(0.01, $remainingAmount * 0.05);
                         $paymentAmount = rand((int)($minPayment * 100), (int)($maxPayment * 100)) / 100;
                     }
                     
-                    // Ensure we don't exceed the invoice total
                     if ($paymentAmount > $remainingAmount) {
                         $paymentAmount = $remainingAmount;
                     }
                     
-                    // Ensure minimum payment amount
                     if ($paymentAmount < 0.01) {
                         continue;
                     }
@@ -75,12 +88,14 @@ class DatabaseSeeder extends Seeder
                     
                     $remainingAmount -= $paymentAmount;
                     
-                    // Break if we've paid the full amount
                     if ($remainingAmount < 0.01) {
                         break;
                     }
                 }
             }
+
+            $invoice->refresh();
+            $invoiceService->updateInvoiceState($invoice);
         }
     }
 }

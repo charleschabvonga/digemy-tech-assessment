@@ -15,7 +15,7 @@ class AwaitingPayment extends InvoiceState
         return 'The invoice is awaiting payment';
     }
 
-    public function displayAmount(): string
+    public function displayLabel(): string
     {
         return 'Awaiting Payment';
     }

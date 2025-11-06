@@ -15,7 +15,7 @@ class Created extends InvoiceState
     return 'Invoice created (not issued)';
   }
 
-  public function displayAmount(): string
+  public function displayLabel(): string
   {
     return 'Created';
   }

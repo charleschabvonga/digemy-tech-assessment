@@ -17,7 +17,9 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->decimal('total_amount', 12, 2);
             $table->string('state')->index();
+            $table->timestamp('refunded_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

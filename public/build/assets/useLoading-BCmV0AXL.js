@@ -1,0 +1,1 @@
+import{r as e}from"./app-9kP0SlvN.js";const a=e(!1),i=e("Loading...");function u(){function n(o,d="Loading..."){a.value=o,i.value=d}function s(o="Loading..."){n(!0,o)}function g(){n(!1)}return{isLoading:a,loadingMessage:i,setLoading:n,showLoading:s,hideLoading:g}}export{u};

@@ -20,11 +20,11 @@ abstract class InvoiceState extends State
       ->allowTransition(PartiallyPaid::class, FullyPaid::class)
       ->allowTransition(FullyPaid::class, PartiallyPaid::class)
       ->allowTransition(PartiallyPaid::class, AwaitingPayment::class)
-      // I added this transition to allow the transition from FullyPaid to AwaitingPayment when all payments are reversed/deleted
-      // This occurs in updateInvoiceState() when a fully paid invoice has all payments removed
-      ->allowTransition(FullyPaid::class, AwaitingPayment::class);
+      ->allowTransition(Created::class, Cancelled::class) // When the invoice is deleted/order is cancelled, it should be set to Cancelled state
+      ->allowTransition(AwaitingPayment::class, Cancelled::class) // When the invoice is deleted/order is cancelled, it should be set to Cancelled state
+      ->allowTransition(PartiallyPaid::class, Refunded::class) // When the invoice is deleted/refunded, it should be set to Refunded state
+      ->allowTransition(FullyPaid::class, Refunded::class); // When the invoice is deleted/refunded, it should be set to Refunded state
   }
-
 
   /**
    * Human readable description for UI/tooltips.
@@ -34,15 +34,13 @@ abstract class InvoiceState extends State
     return class_basename(static::class);
   }
 
-
   /**
    * Short badge/label for UI tables.
    */
-  public function displayAmount(): string
+  public function displayLabel(): string
   {
     return $this->description();
   }
-
 
   /**
    * UI intent for coloring (maps to Tailwind/bootstrap classes client-side).

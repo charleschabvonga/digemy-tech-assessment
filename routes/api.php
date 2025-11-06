@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\V1\Auth\{LoginController, LogoutController};
-use App\Http\Controllers\API\V1\Invoices\{InvoicesController, CreateInvoiceController, ShowInvoiceController, SendInvoiceToCustomerController};
+use App\Http\Controllers\API\V1\Auth\{LoginController, RegisterController, LogoutController, UserController};
+use App\Http\Controllers\API\V1\Invoices\{InvoicesController, CreateInvoiceController, ShowInvoiceController, SendInvoiceToCustomerController, CancelInvoiceController};
 use App\Http\Controllers\API\V1\Payments\{MakePaymentController, ReversePaymentController};
 
 /*
@@ -19,9 +19,11 @@ use App\Http\Controllers\API\V1\Payments\{MakePaymentController, ReversePaymentC
 Route::prefix('v1')->group(function () {
     // public auth endpoints
     Route::post('auth/login', LoginController::class);
+    Route::post('auth/register', RegisterController::class);
 
     // protected API
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('auth/user', UserController::class);
         Route::post('auth/logout', LogoutController::class);
 
         Route::prefix('invoices')->group(function () {
@@ -29,6 +31,7 @@ Route::prefix('v1')->group(function () {
             Route::post('/', CreateInvoiceController::class)->name('invoices.store');
             Route::get('{invoice}', ShowInvoiceController::class)->name('invoices.show');
             Route::post('{invoice}/send', SendInvoiceToCustomerController::class)->name('invoices.send');
+            Route::delete('{invoice}', CancelInvoiceController::class)->name('invoices.destroy');
 
             Route::prefix('{invoice}/payments')->name('payments.')->scopeBindings()->group(function () {
                 Route::post('/', MakePaymentController::class)->name('store');

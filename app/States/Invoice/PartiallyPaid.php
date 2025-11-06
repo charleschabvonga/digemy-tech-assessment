@@ -15,7 +15,7 @@ class PartiallyPaid extends InvoiceState
         return 'A partial payment has been received';
     }
 
-    public function displayAmount(): string
+    public function displayLabel(): string
     {
         return 'Partially Paid';
     }

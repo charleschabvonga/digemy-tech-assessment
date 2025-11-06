@@ -17,8 +17,8 @@ class StorePaymentRequest extends FormRequest
 
   public function toDTO(): PaymentData
   {
-    $v = $this->validated();
+    $validated = $this->validated();
     
-    return new PaymentData(amount: (string) $v['amount']);
+    return new PaymentData(amount: (string) $validated['amount']);
   }
 }

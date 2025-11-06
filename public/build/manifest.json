@@ -1,0 +1,171 @@
+{
+  "_ActionButton-B62s7JkR.js": {
+    "file": "assets/ActionButton-B62s7JkR.js",
+    "name": "ActionButton",
+    "imports": [
+      "_use-toast-PXmlt-Ck.js",
+      "resources/js/app.js"
+    ]
+  },
+  "_FormModal-eUpW1xav.js": {
+    "file": "assets/FormModal-eUpW1xav.js",
+    "name": "FormModal",
+    "imports": [
+      "_use-toast-PXmlt-Ck.js",
+      "resources/js/app.js"
+    ]
+  },
+  "_Loading-Bi9Ghn51.js": {
+    "file": "assets/Loading-Bi9Ghn51.js",
+    "name": "Loading",
+    "imports": [
+      "_use-toast-PXmlt-Ck.js",
+      "resources/js/app.js"
+    ]
+  },
+  "_invoices-C0PDEMHR.js": {
+    "file": "assets/invoices-C0PDEMHR.js",
+    "name": "invoices",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_state-CxKqa_XZ.js": {
+    "file": "assets/state-CxKqa_XZ.js",
+    "name": "state",
+    "imports": [
+      "_use-toast-PXmlt-Ck.js",
+      "resources/js/app.js"
+    ]
+  },
+  "_use-toast-PXmlt-Ck.js": {
+    "file": "assets/use-toast-PXmlt-Ck.js",
+    "name": "use-toast",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_useLoading-BCmV0AXL.js": {
+    "file": "assets/useLoading-BCmV0AXL.js",
+    "name": "useLoading",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400-BfBXV7Mm.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400-BVHPE7da.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900-8GirhLYJ.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2": {
+    "file": "assets/fa-v4compatibility-DnhYSyY-.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-Da9HBDb5.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-9kP0SlvN.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/pages/auth/Login.vue",
+      "resources/js/pages/auth/SignUp.vue",
+      "resources/js/components/InvoiceLayout.vue",
+      "resources/js/pages/invoices/Index.vue",
+      "resources/js/pages/invoices/Create.vue",
+      "resources/js/pages/invoices/Show.vue"
+    ]
+  },
+  "resources/js/components/InvoiceLayout.vue": {
+    "file": "assets/InvoiceLayout-B6E62jHz.js",
+    "name": "InvoiceLayout",
+    "src": "resources/js/components/InvoiceLayout.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_ActionButton-B62s7JkR.js",
+      "_Loading-Bi9Ghn51.js",
+      "_use-toast-PXmlt-Ck.js",
+      "_invoices-C0PDEMHR.js",
+      "_useLoading-BCmV0AXL.js"
+    ],
+    "css": [
+      "assets/InvoiceLayout-pELclnFv.css"
+    ]
+  },
+  "resources/js/pages/auth/Login.vue": {
+    "file": "assets/Login-BTim_lXb.js",
+    "name": "Login",
+    "src": "resources/js/pages/auth/Login.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_use-toast-PXmlt-Ck.js",
+      "_ActionButton-B62s7JkR.js"
+    ]
+  },
+  "resources/js/pages/auth/SignUp.vue": {
+    "file": "assets/SignUp-DoYmke1Q.js",
+    "name": "SignUp",
+    "src": "resources/js/pages/auth/SignUp.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_use-toast-PXmlt-Ck.js",
+      "_ActionButton-B62s7JkR.js"
+    ]
+  },
+  "resources/js/pages/invoices/Create.vue": {
+    "file": "assets/Create-CfLxFlRt.js",
+    "name": "Create",
+    "src": "resources/js/pages/invoices/Create.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_use-toast-PXmlt-Ck.js",
+      "_FormModal-eUpW1xav.js",
+      "_invoices-C0PDEMHR.js"
+    ]
+  },
+  "resources/js/pages/invoices/Index.vue": {
+    "file": "assets/Index-r-820VUd.js",
+    "name": "Index",
+    "src": "resources/js/pages/invoices/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_use-toast-PXmlt-Ck.js",
+      "_state-CxKqa_XZ.js",
+      "resources/js/app.js",
+      "resources/js/pages/invoices/Create.vue",
+      "_invoices-C0PDEMHR.js",
+      "_useLoading-BCmV0AXL.js",
+      "_FormModal-eUpW1xav.js"
+    ]
+  },
+  "resources/js/pages/invoices/Show.vue": {
+    "file": "assets/Show-CtfuGe8U.js",
+    "name": "Show",
+    "src": "resources/js/pages/invoices/Show.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_use-toast-PXmlt-Ck.js",
+      "_Loading-Bi9Ghn51.js",
+      "_FormModal-eUpW1xav.js",
+      "_state-CxKqa_XZ.js",
+      "resources/js/app.js",
+      "_useLoading-BCmV0AXL.js",
+      "_invoices-C0PDEMHR.js"
+    ]
+  }
+}

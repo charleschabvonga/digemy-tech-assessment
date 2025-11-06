@@ -15,7 +15,7 @@ class FullyPaid extends InvoiceState
         return 'Paid in full';
     }
 
-    public function displayAmount(): string
+    public function displayLabel(): string
     {
         return 'Paid in Full';
     }

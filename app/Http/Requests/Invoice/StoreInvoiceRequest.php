@@ -19,12 +19,12 @@ class StoreInvoiceRequest extends FormRequest
 
   public function toDTO(): InvoiceData
   {
-    $v = $this->validated();
+    $validated = $this->validated();
 
     return new InvoiceData(
-      title: $v['title'],
-      description: $v['description'] ?? null,
-      totalAmount: (string) $v['total_amount'],
+      title: $validated['title'],
+      description: $validated['description'] ?? null,
+      totalAmount: (string) $validated['total_amount'],
     );
   }
 }

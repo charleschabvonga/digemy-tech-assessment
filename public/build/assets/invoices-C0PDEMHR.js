@@ -1,0 +1,1 @@
+import{E as e}from"./app-9kP0SlvN.js";const o={async list(s=1,a=5){return(await e.get("/invoices",{params:{page:s,per_page:a}})).data},async show(s){return(await e.get(`/invoices/${s}`)).data},async create(s){return(await e.post("/invoices",s)).data},async send(s){return(await e.post(`/invoices/${s}/send`)).data},async cancel(s){await e.delete(`/invoices/${s}`)}};export{o as i};
