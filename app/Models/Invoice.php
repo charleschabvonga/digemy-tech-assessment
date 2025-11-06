@@ -34,12 +34,14 @@ class Invoice extends Model
 
     public function totalPaid(): string
     {
-        return (string) $this->payments()->sum('amount');
+        $sum = $this->payments()->sum('amount');
+        return number_format((float) $sum, 2, '.', '');
     }
 
     public function outstanding(): string
     {
-        return (string) (bcsub($this->total_amount, $this->totalPaid()));
+        $outstanding = bcsub($this->total_amount, $this->totalPaid(), 2);
+        return number_format((float) $outstanding, 2, '.', '');
     }
 
     public function sendToCustomer(): Invoice
