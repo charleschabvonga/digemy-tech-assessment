@@ -27,19 +27,19 @@ export function getCsrfHeader() {
 }
 
 function getStoredUser() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_USER_KEY)) || null } catch { return null }
+  try { return JSON.parse(sessionStorage.getItem(STORAGE_USER_KEY)) || null } catch { return null }
 }
 function setStoredUser(user) {
-  if (user) localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(user))
-  else localStorage.removeItem(STORAGE_USER_KEY)
+  if (user) sessionStorage.setItem(STORAGE_USER_KEY, JSON.stringify(user))
+  else sessionStorage.removeItem(STORAGE_USER_KEY)
 }
 
 function getStoredToken() {
-  return localStorage.getItem(STORAGE_TOKEN_KEY) || null
+  return sessionStorage.getItem(STORAGE_TOKEN_KEY) || null
 }
 function setStoredToken(token) {
-  if (token) localStorage.setItem(STORAGE_TOKEN_KEY, token)
-  else localStorage.removeItem(STORAGE_TOKEN_KEY)
+  if (token) sessionStorage.setItem(STORAGE_TOKEN_KEY, token)
+  else sessionStorage.removeItem(STORAGE_TOKEN_KEY)
 }
 
 export function getAuthHeader() {
