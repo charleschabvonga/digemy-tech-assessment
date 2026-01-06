@@ -1,5 +1,5 @@
 import { ref, computed } from 'vue'
-import { authApi, api } from '../api/auth'
+import { authApi } from '../api/auth'
 
 const _user = ref(null)
 const _isAuthenticated = ref(false)
@@ -58,7 +58,5 @@ export function useAuth() {
     return () => emitter.removeEventListener(event, wrapped)
   }
 
-  return { user, isAuthenticated, checkAuth, login, register, logout, on, api }
+  return { user, isAuthenticated, checkAuth, login, register, logout, on }
 }
-
-export { api }

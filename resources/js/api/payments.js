@@ -1,4 +1,4 @@
-import { api } from '@/composables/useAuth';
+import { api } from '@/api/httpClient';
 
 export const paymentsApi = {
     async create(invoiceId, amount) {

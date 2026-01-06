@@ -1,4 +1,4 @@
-import { api } from '@/composables/useAuth';
+import { api } from '@/api/httpClient';
 
 export const invoicesApi = {
     async list(page = 1, perPage = 5) {

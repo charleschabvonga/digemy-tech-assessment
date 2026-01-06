@@ -136,7 +136,7 @@
     />
 </template>
 
-<script>
+<script setup>
 import { onMounted, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import Loading from '@/components/Loading.vue'
@@ -148,18 +148,53 @@ import Tooltip from '@/components/Tooltip.vue'
 import CreatePayment from '../payments/Create.vue'
 import { useInvoiceShow } from './show/useInvoiceShow'
 
-export default {
-  name: 'InvoicesShow',
-  components: { Icon, Loading, Button, ConfirmModal, EntityTable, StatCard, Tooltip, CreatePayment },
-  props: { id: { type: [Number, String], required: true } },
-  emits: ['loading'],
-  setup(props, { emit }) {
-    const vm = useInvoiceShow(props, emit) // vm short for "view model"
-
-    onMounted(() => vm.loadInvoice())
-    watch(() => props.id, () => vm.loadInvoice())
-
-    return vm
+const props = defineProps({
+  id: {
+    type: [Number, String],
+    required: true,
   },
-}
+})
+
+const emit = defineEmits(['loading'])
+
+const vm = useInvoiceShow(props, emit)
+
+onMounted(() => vm.loadInvoice())
+watch(() => props.id, () => vm.loadInvoice())
+
+const {
+  invoice,
+  payments,
+  loading,
+  error,
+  sending,
+  cancelling,
+  reversing,
+  showPaymentForm,
+  showCancelConfirm,
+  showReverseConfirm,
+  pendingReverseId,
+  paymentColumns,
+  totalPaid,
+  outstanding,
+  outstandingColor,
+  canSend,
+  canCancel,
+  canmakePayment,
+  canReversePayment,
+  isRefund,
+  paymentTableDescription,
+  loadInvoice,
+  goBack,
+  handleSend,
+  handleCancel,
+  confirmCancel,
+  handleReversePayment,
+  confirmReverse,
+  handlePaymentCreated,
+  formatMoney,
+  formatDate,
+  getStateBadgeClass,
+  getStatusColor,
+} = vm
 </script>

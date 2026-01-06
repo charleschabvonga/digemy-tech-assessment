@@ -46,7 +46,7 @@
           class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Invoice description"
           :disabled="loading"
-        />
+        ></textarea>
         <p v-if="fieldErrors.description" class="mt-1 text-xs text-red-600">{{ fieldErrors.description }}</p>
       </div>
 
@@ -104,11 +104,11 @@ import { useInvoiceCreate } from './create/useInvoiceCreate'
 const props = defineProps({
   show: { type: Boolean, default: false },
 })
+
 const emit = defineEmits(['close', 'created', 'loading'])
-
 const { form, loading, error, fieldErrors, handleSubmit, resetForm } = useInvoiceCreate(emit)
-
 const { show } = toRefs(props)
+
 watch(show, (val) => {
   if (!val) resetForm()
 })

@@ -59,7 +59,7 @@
   </FormModal>
 </template>
 
-<script>
+<script setup>
 import { ref, watch } from 'vue';
 import { Icon } from '@iconify/vue';
 import { useToast } from '@/components/ui/toast/use-toast';
@@ -68,92 +68,76 @@ import Button from '@/components/Button.vue';
 import FormModal from '@/components/FormModal.vue';
 import { formatMoney } from '@/utils/money';
 
-export default {
-  name: 'PaymentsCreate',
-  components: {
-    Icon,
-    Button,
-    FormModal
+const props = defineProps({
+  show: {
+    type: Boolean,
+    default: true,
   },
-  props: {
-    show: {
-      type: Boolean,
-      default: true
-    },
-    invoiceId: {
-      type: [Number, String],
-      required: true
-    },
-    maxAmount: {
-      type: [Number, String],
-      required: true
-    }
+  invoiceId: {
+    type: [Number, String],
+    required: true,
   },
-  emits: ['close', 'created'],
-  setup(props, { emit }) {
-    const { toast } = useToast();
-    const amount = ref('');
-    const loading = ref(false);
-    const error = ref('');
+  maxAmount: {
+    type: [Number, String],
+    required: true,
+  },
+});
 
-    function resetForm() {
-      amount.value = '';
-      error.value = '';
-    }
+const emit = defineEmits(['close', 'created']);
 
-    const handleSubmit = async () => {
-      const amountValue = parseFloat(amount.value);
-      
-      if (amountValue <= 0) {
-        error.value = 'Amount must be greater than 0';
-        return;
-      }
+const { toast } = useToast();
+const amount = ref('');
+const loading = ref(false);
+const error = ref('');
 
-      if (amountValue > parseFloat(props.maxAmount)) {
-        error.value = 'Amount cannot exceed outstanding balance';
-        return;
-      }
+function resetForm() {
+  amount.value = '';
+  error.value = '';
+}
 
-      loading.value = true;
-      error.value = '';
+const handleSubmit = async () => {
+  const amountValue = parseFloat(amount.value);
 
-      try {
-        await paymentsApi.create(props.invoiceId, amountValue);
-        toast({
-          title: 'Success',
-          description: 'Payment added successfully',
-          variant: 'default'
-        });
-        resetForm();
-        emit('created');
-        emit('close');
-      } catch (err) {
-        const errorMsg = err.response?.data?.message || err.response?.data?.errors?.amount?.[0] || 'Failed to add payment';
-        error.value = errorMsg;
-        toast({
-          title: 'Error',
-          description: errorMsg,
-          variant: 'destructive'
-        });
-      } finally {
-        loading.value = false;
-      }
-    };
+  if (amountValue <= 0) {
+    error.value = 'Amount must be greater than 0';
+    return;
+  }
 
-    watch(() => props.show, (newVal) => {
-      if (!newVal) {
-        resetForm();
-      }
+  if (amountValue > parseFloat(props.maxAmount)) {
+    error.value = 'Amount cannot exceed outstanding balance';
+    return;
+  }
+
+  loading.value = true;
+  error.value = '';
+
+  try {
+    await paymentsApi.create(props.invoiceId, amountValue);
+    toast({
+      title: 'Success',
+      description: 'Payment added successfully',
+      variant: 'default',
     });
-
-    return {
-      amount,
-      loading,
-      error,
-      handleSubmit,
-      formatMoney
-    };
+    resetForm();
+    emit('created');
+    emit('close');
+  } catch (err) {
+    const errorMsg = err.response?.data?.message || err.response?.data?.errors?.amount?.[0] || 'Failed to add payment';
+    error.value = errorMsg;
+    toast({
+      title: 'Error',
+      description: errorMsg,
+      variant: 'destructive',
+    });
+  } finally {
+    loading.value = false;
   }
 };
+
+watch(() => props.show, (newVal) => {
+  if (!newVal) {
+    resetForm();
+  }
+});
 </script>
 
