@@ -110,7 +110,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
 import { css } from '../../../../styled-system/css'
@@ -121,8 +121,16 @@ import CreateInvoice from './Create.vue'
 import { useInvoicesIndex } from './index/useInvoicesIndex'
 import { invoiceColumns as columns } from './index/columns'
 
-const emit = defineEmits(['cancel', 'loading'])
-const vm = useInvoicesIndex(emit) // vm short for "view model"
+const emit = defineEmits<{
+  (e: 'cancel', invoice: any): void
+  (e: 'loading', value: boolean): void
+}>()
+
+const vm = useInvoicesIndex((event, payload) => {
+  if (event === 'loading') {
+    emit('loading', payload as boolean)
+  }
+})
 
 onMounted(() => {
   vm.initializePerPage()

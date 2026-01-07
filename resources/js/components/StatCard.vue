@@ -10,30 +10,23 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { css, cva } from '../../../styled-system/css'
 
-const props = defineProps({
-  label: {
-    type: String,
-    required: true,
-  },
-  value: {
-    type: [String, Number],
-    required: true,
-  },
-  icon: {
-    type: String,
-    default: '',
-  },
-  valueColor: {
-    type: String,
-    default: 'gray',
-    validator: value =>
-      ['gray', 'green', 'red', 'blue', 'yellow', 'indigo'].includes(value),
-  },
+type StatColor = 'gray' | 'green' | 'red' | 'blue' | 'yellow' | 'indigo'
+
+interface StatCardProps {
+  label: string
+  value: string | number
+  icon?: string
+  valueColor?: StatColor
+}
+
+const props = withDefaults(defineProps<StatCardProps>(), {
+  icon: '',
+  valueColor: 'gray',
 })
 
 const cardClass = css({

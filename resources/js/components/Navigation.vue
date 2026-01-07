@@ -39,7 +39,7 @@
   </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { css } from '../../../styled-system/css'
 import Logo from './Logo.vue'
@@ -48,14 +48,17 @@ import { useAuth } from '@/composables/useAuth'
 
 const { user, isAuthenticated } = useAuth()
 
-defineProps({
-  isLoading: {
-    type: Boolean,
-    default: false,
-  },
+interface NavigationProps {
+  isLoading?: boolean
+}
+
+withDefaults(defineProps<NavigationProps>(), {
+  isLoading: false,
 })
 
-defineEmits(['logout'])
+defineEmits<{
+  (e: 'logout'): void
+}>()
 
 const navClass = css({
   position: 'fixed',

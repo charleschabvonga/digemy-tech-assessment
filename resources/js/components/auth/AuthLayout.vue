@@ -21,25 +21,18 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import Logo from '@/components/Logo.vue'
 import { css } from '../../../../styled-system/css'
 
-const props = defineProps({
-  icon: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-  subtitle: {
-    type: String,
-    required: true,
-  },
-})
+interface AuthLayoutProps {
+  icon: string
+  title: string
+  subtitle: string
+}
+
+defineProps<AuthLayoutProps>()
 
 const containerClass = css({
   minHeight: '100vh',

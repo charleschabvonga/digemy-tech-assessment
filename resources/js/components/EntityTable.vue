@@ -72,28 +72,53 @@
   </table>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { css } from '../../../styled-system/css'
 
-const props = defineProps({
-  title: { type: String, required: true },
-  icon: { type: String, required: true },
-  description: { type: String, default: '' },
-  columns: { type: Array, default: () => [] },
-  data: { type: Array, default: () => [] },
-  actionButton: { type: Object, default: null },
-  emptyStateIcon: { type: String, default: 'mdi:file-document-outline' },
-  emptyStateMessage: { type: String, default: 'No items found' },
-  rowKey: { type: [String, Function], default: 'id' },
+interface EntityTableColumn {
+  label: string
+  key?: string
+}
+
+interface ActionButtonConfig {
+  label: string
+  icon?: string
+  show?: boolean
+}
+
+type RowKeyProp = string | ((row: any, index: number) => string | number)
+
+interface EntityTableProps {
+  title: string
+  icon: string
+  description?: string
+  columns?: EntityTableColumn[]
+  data?: any[]
+  actionButton?: ActionButtonConfig | null
+  emptyStateIcon?: string
+  emptyStateMessage?: string
+  rowKey?: RowKeyProp
+}
+
+const props = withDefaults(defineProps<EntityTableProps>(), {
+  description: '',
+  columns: () => [],
+  data: () => [],
+  actionButton: null,
+  emptyStateIcon: 'mdi:file-document-outline',
+  emptyStateMessage: 'No items found',
+  rowKey: 'id',
 })
 
-const emit = defineEmits(['action-click'])
+const emit = defineEmits<{
+  (e: 'action-click'): void
+}>()
 
 const columnCount = computed(() => props.columns.length)
 
-const getRowKey = (row, index) =>
+const getRowKey = (row: any, index: number) =>
   typeof props.rowKey === 'function'
     ? props.rowKey(row, index)
     : row?.[props.rowKey] ?? index
@@ -218,7 +243,7 @@ const columnHeaderRightClass = css({
   whiteSpace: 'nowrap',
 })
 
-function columnHeaderClass(column) {
+function columnHeaderClass(column: EntityTableColumn) {
   const isId =
     column.key === 'id' || column.label === 'ID'
   return [

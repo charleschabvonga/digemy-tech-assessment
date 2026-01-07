@@ -85,34 +85,38 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { css } from '../../../styled-system/css'
 
-const props = defineProps({
-  pagination: {
-    type: Object,
-    default: null
-  },
-  perPage: {
-    type: Number,
-    required: true
-  },
-  visiblePages: {
-    type: Array,
-    default: () => []
-  },
-  loading: {
-    type: Boolean,
-    default: false
-  },
-  showBorderTop: {
-    type: Boolean,
-    default: true
-  }
+interface PaginationMeta {
+  current_page: number
+  last_page: number
+  from?: number | null
+  to?: number | null
+  total?: number | null
+  prev_page_url?: string | null
+  next_page_url?: string | null
+}
+
+interface PaginationProps {
+  pagination: PaginationMeta | null
+  perPage: number
+  visiblePages: number[]
+  loading?: boolean
+  showBorderTop?: boolean
+}
+
+const props = withDefaults(defineProps<PaginationProps>(), {
+  loading: false,
+  showBorderTop: true,
+  visiblePages: () => [],
 })
 
-const emit = defineEmits(['page-change', 'per-page-change'])
+const emit = defineEmits<{
+  (e: 'page-change', page: number): void
+  (e: 'per-page-change', perPage: number): void
+}>()
 
 const containerClass = css({
   paddingInline: '1.5rem',
@@ -217,17 +221,14 @@ const navIconClass = css({
   height: '1rem',
 })
 
-const pageButtonBaseClass = css({
+
+const pageButtonClass = css({
   paddingInline: '0.5rem',
   paddingBlock: '0.25rem',
   fontSize: '0.75rem',
   fontWeight: 500,
   borderRadius: '0.375rem',
   cursor: 'pointer',
-})
-
-const pageButtonClass = css({
-  ...pageButtonBaseClass,
   color: 'rgb(55, 65, 81)',
   backgroundColor: 'white',
   borderWidth: '1px',
@@ -244,17 +245,23 @@ const pageButtonClass = css({
 })
 
 const pageActiveClass = css({
-  ...pageButtonBaseClass,
+  paddingInline: '0.5rem',
+  paddingBlock: '0.25rem',
+  fontSize: '0.75rem',
+  fontWeight: 500,
+  borderRadius: '0.375rem',
+  cursor: 'pointer',
   backgroundColor: 'rgb(37, 99, 235)',
   color: 'white',
 })
 
-function handleGoToPage(page) {
+function handleGoToPage(page: number) {
   emit('page-change', page)
 }
 
-function handlePerPageChange(event) {
-  const newPerPage = parseInt(event.target.value)
+function handlePerPageChange(event: Event) {
+  const target = event.target as HTMLSelectElement
+  const newPerPage = parseInt(target.value, 10)
   emit('per-page-change', newPerPage)
 }
 </script>

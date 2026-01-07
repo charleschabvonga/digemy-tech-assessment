@@ -19,40 +19,34 @@
   </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { cva, css } from '../../../styled-system/css'
 
-const props = defineProps({
-  type: {
-    type: String,
-    default: 'button',
-  },
-  variant: {
-    type: String,
-    default: 'primary',
-    validator: value => ['primary', 'primary-green', 'secondary'].includes(value),
-  },
-  icon: {
-    type: String,
-    default: '',
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  text: {
-    type: String,
-    default: '',
-  },
+type ButtonVariant = 'primary' | 'primary-green' | 'secondary'
+
+interface ButtonProps {
+  type?: 'button' | 'submit' | 'reset'
+  variant?: ButtonVariant
+  icon?: string
+  loading?: boolean
+  disabled?: boolean
+  text?: string
+}
+
+const props = withDefaults(defineProps<ButtonProps>(), {
+  type: 'button',
+  variant: 'primary',
+  icon: '',
+  loading: false,
+  disabled: false,
+  text: '',
 })
 
-const emit = defineEmits(['click'])
+const emit = defineEmits<{
+  (e: 'click', event: MouseEvent): void
+}>()
 
 const buttonStyle = cva({
   base: {
@@ -123,7 +117,7 @@ const buttonClass = computed(() =>
   }),
 )
 
-function handleClick(event) {
+function handleClick(event: MouseEvent) {
   if (!props.disabled && !props.loading) {
     emit('click', event)
   }

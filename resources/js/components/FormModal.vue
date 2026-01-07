@@ -26,30 +26,27 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { css } from '../../../styled-system/css'
 
-const props = defineProps({
-  show: {
-    type: Boolean,
-    default: false,
-  },
-  title: {
-    type: String,
-    default: '',
-  },
-  disableClose: {
-    type: Boolean,
-    default: false,
-  },
-  closeOnBackdrop: {
-    type: Boolean,
-    default: true,
-  },
+interface FormModalProps {
+  show?: boolean
+  title?: string
+  disableClose?: boolean
+  closeOnBackdrop?: boolean
+}
+
+const props = withDefaults(defineProps<FormModalProps>(), {
+  show: false,
+  title: '',
+  disableClose: false,
+  closeOnBackdrop: true,
 })
 
-const emit = defineEmits(['close'])
+const emit = defineEmits<{
+  (e: 'close'): void
+}>()
 
 const backdropClass = css({
   position: 'fixed',

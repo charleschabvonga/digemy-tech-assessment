@@ -26,48 +26,36 @@
   </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import { cva, css } from '../../../styled-system/css'
 
-const props = defineProps({
-  label: {
-    type: String,
-    required: true,
-  },
-  icon: {
-    type: String,
-    required: true,
-  },
-  type: {
-    type: String,
-    default: 'button',
-  },
-  variant: {
-    type: String,
-    default: 'gray',
-    validator: (value) => ['gray', 'blue'].includes(value),
-  },
-  disabled: {
-    type: Boolean,
-    default: false,
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  ariaLabel: {
-    type: String,
-    default: '',
-  },
-  title: {
-    type: String,
-    default: '',
-  },
+type ActionButtonVariant = 'gray' | 'blue'
+
+interface ActionButtonProps {
+  label: string
+  icon: string
+  type?: 'button' | 'submit' | 'reset'
+  variant?: ActionButtonVariant
+  disabled?: boolean
+  loading?: boolean
+  ariaLabel?: string
+  title?: string
+}
+
+const props = withDefaults(defineProps<ActionButtonProps>(), {
+  type: 'button',
+  variant: 'gray',
+  disabled: false,
+  loading: false,
+  ariaLabel: '',
+  title: '',
 })
 
-const emit = defineEmits(['click'])
+const emit = defineEmits<{
+  (e: 'click', event: MouseEvent): void
+}>()
 
 const buttonStyle = cva({
   base: {
@@ -220,7 +208,7 @@ const overlayClass = computed(() =>
   props.variant === 'blue' ? overlayBlueClass : overlayGrayClass,
 )
 
-function handleClick(event) {
+function handleClick(event: MouseEvent) {
   if (!props.disabled && !props.loading) {
     emit('click', event)
   }

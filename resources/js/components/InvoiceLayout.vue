@@ -29,7 +29,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { css } from '../../../styled-system/css'
@@ -70,9 +70,9 @@ const globalLoading = useLoading()
 
 const isLoading = ref(false)
 const loggingOut = ref(false)
-const childRef = ref(null)
+const childRef = ref<any | null>(null)
 
-function onLoading(loading) {
+function onLoading(loading: boolean) {
   isLoading.value = loading
 }
 
@@ -82,7 +82,7 @@ async function handleLogout() {
   try {
     await logout()
     router.push({ name: 'Login' })
-  } catch (err) {
+  } catch (err: any) {
     toast({ title: 'Error', description: 'Failed to logout', variant: 'destructive' })
   } finally {
     loggingOut.value = false
@@ -92,8 +92,8 @@ async function handleLogout() {
 
 const showCancelConfirm = ref(false)
 const cancelling = ref(false)
-const pendingCancelId = ref(null)
-const pendingInvoice = ref(null)
+const pendingCancelId = ref<number | string | null>(null)
+const pendingInvoice = ref<any | null>(null)
 
 const isRefund = computed(() => {
   if (!pendingInvoice.value) return false
@@ -101,7 +101,7 @@ const isRefund = computed(() => {
   return s === 'partially_paid' || s === 'fully_paid' || s === 'refunded'
 })
 
-function handleInvoiceCancel(invoice) {
+function handleInvoiceCancel(invoice: any) {
   // Handle both old format (just ID) and new format (invoice object)
   if (typeof invoice === 'object' && invoice !== null) {
     pendingInvoice.value = invoice
@@ -143,9 +143,14 @@ async function confirmCancel() {
     }
   } catch (err) {
     const actionText = isRefund.value ? 'refund' : 'cancel'
-    const errorMsg = err && err.response && err.response.data && err.response.data.message
-      ? err.response.data.message
-      : `Failed to ${actionText} invoice`
+    const anyErr = err as any
+    const errorMsg =
+      anyErr &&
+      anyErr.response &&
+      anyErr.response.data &&
+      anyErr.response.data.message
+        ? anyErr.response.data.message
+        : `Failed to ${actionText} invoice`
     toast({ title: 'Error', description: errorMsg, variant: 'destructive' })
   } finally {
     cancelling.value = false

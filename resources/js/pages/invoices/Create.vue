@@ -98,7 +98,7 @@
   </FormModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { watch, toRefs } from 'vue'
 import { Icon } from '@iconify/vue'
 import { css } from '../../../../styled-system/css'
@@ -106,12 +106,22 @@ import Button from '@/components/Button.vue'
 import FormModal from '@/components/FormModal.vue'
 import { useInvoiceCreate } from './create/useInvoiceCreate'
 
-const props = defineProps({
-  show: { type: Boolean, default: false },
-})
+const props = defineProps<{
+  show?: boolean
+}>()
 
-const emit = defineEmits(['close', 'created', 'loading'])
-const { form, loading, error, fieldErrors, handleSubmit, resetForm } = useInvoiceCreate(emit)
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'created'): void
+  (e: 'loading', value: boolean): void
+}>()
+const { form, loading, error, fieldErrors, handleSubmit, resetForm } = useInvoiceCreate(
+  (event, payload) => {
+    if (event === 'close') emit('close')
+    if (event === 'created') emit('created')
+    if (event === 'loading') emit('loading', payload as boolean)
+  },
+)
 const { show } = toRefs(props)
 
 watch(show, (val) => {

@@ -15,25 +15,22 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue'
 import { css } from '../../../styled-system/css'
 
-const props = defineProps({
-  text: {
-    type: String,
-    default: '',
-  },
-  position: {
-    type: String,
-    default: 'top',
-    validator: value =>
-      ['top', 'bottom', 'left', 'right', 'top-left'].includes(value),
-  },
-  multiLine: {
-    type: Boolean,
-    default: false,
-  },
+type TooltipPosition = 'top' | 'bottom' | 'left' | 'right' | 'top-left'
+
+interface TooltipProps {
+  text?: string
+  position?: TooltipPosition
+  multiLine?: boolean
+}
+
+const props = withDefaults(defineProps<TooltipProps>(), {
+  text: '',
+  position: 'top',
+  multiLine: false,
 })
 
 const isHovered = ref(false)
@@ -43,7 +40,7 @@ const wrapperClass = css({
   display: 'inline-block',
 })
 
-const tooltipBase = {
+const tooltipBase: Record<string, any> = {
   position: 'absolute',
   paddingInline: '0.75rem',
   paddingBlock: '0.5rem',
@@ -56,7 +53,7 @@ const tooltipBase = {
   transitionDuration: '200ms',
 }
 
-const tooltipPositions = {
+const tooltipPositions: Record<TooltipPosition, Record<string, any>> = {
   top: {
     bottom: '100%',
     left: '50%',
@@ -88,13 +85,13 @@ const tooltipPositions = {
   },
 }
 
-const arrowBase = {
+const arrowBase: Record<string, any> = {
   position: 'absolute',
   borderWidth: '0.25rem',
   borderColor: 'transparent',
 }
 
-const arrowPositions = {
+const arrowPositions: Record<TooltipPosition, Record<string, any>> = {
   top: {
     top: '100%',
     left: '50%',

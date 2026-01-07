@@ -10,12 +10,12 @@
   </ToastProvider>
 </template>
 
-<script setup>
-import { useToast } from './use-toast.js';
-import Toast from './Toast.vue';
-import ToastProvider from './ToastProvider.vue';
-import ToastViewport from './ToastViewport.vue';
+<script setup lang="ts">
+import { useToast } from './use-toast'
+import Toast from './Toast.vue'
+import ToastProvider from './ToastProvider.vue'
+import ToastViewport from './ToastViewport.vue'
 
-const { toasts } = useToast();
+const { toasts } = useToast()
 </script>
 

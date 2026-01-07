@@ -1,8 +1,7 @@
-// resources/js/router/index.js
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'Login',
@@ -34,7 +33,7 @@ const routes = [
         path: ':id',
         name: 'ShowInvoice',
         component: () => import('../pages/invoices/Show.vue'),
-        props: route => ({ id: route.params.id }),
+        props: route => ({ id: route.params.id as string }),
       },
     ],
   },
@@ -46,7 +45,7 @@ const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 })
 
-router.beforeEach(async (to) => {
+router.beforeEach(async to => {
   const { checkAuth, isAuthenticated } = useAuth()
   await checkAuth()
 
@@ -69,3 +68,5 @@ router.beforeEach(async (to) => {
 })
 
 export default router
+
+

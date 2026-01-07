@@ -2,29 +2,48 @@ import { ref, reactive } from 'vue'
 import { useToast } from '@/components/ui/toast/use-toast'
 import { invoicesApi } from '@/api/invoices'
 
-export function useInvoiceCreate(emit) {
+interface InvoiceCreateForm {
+  title: string
+  description: string
+  totalAmount: number | null
+}
+
+interface InvoiceFieldErrors {
+  title: string
+  description: string
+  total_amount: string
+}
+
+type EmitFn = ((
+  event: 'close' | 'created' | 'loading',
+  payload?: unknown,
+) => void) | undefined
+
+export function useInvoiceCreate(emit?: EmitFn) {
   const { toast } = useToast()
 
-  const form = reactive({
+  const form = reactive<InvoiceCreateForm>({
     title: '',
     description: '',
     totalAmount: null,
   })
+
   const loading = ref(false)
   const error = ref('')
-  const fieldErrors = reactive({
+
+  const fieldErrors = reactive<InvoiceFieldErrors>({
     title: '',
     description: '',
     total_amount: '',
   })
 
-  function resetFieldErrors() {
+  function resetFieldErrors(): void {
     fieldErrors.title = ''
     fieldErrors.description = ''
     fieldErrors.total_amount = ''
   }
 
-  function validate() {
+  function validate(): boolean {
     resetFieldErrors()
     const title = (form.title || '').trim()
     const amount = Number(form.totalAmount)
@@ -43,7 +62,7 @@ export function useInvoiceCreate(emit) {
     return true
   }
 
-  function resetForm() {
+  function resetForm(): void {
     form.title = ''
     form.description = ''
     form.totalAmount = null
@@ -51,7 +70,7 @@ export function useInvoiceCreate(emit) {
     error.value = ''
   }
 
-  async function handleSubmit() {
+  async function handleSubmit(): Promise<void> {
     if (loading.value) return
     if (!validate()) return
 
@@ -69,17 +88,20 @@ export function useInvoiceCreate(emit) {
       resetForm()
       emit?.('created')
       emit?.('close')
-    } catch (err) {
-      let msg = err?.response?.data?.message || err?.message || 'Failed to create invoice'
+    } catch (err: any) {
+      let msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        'Failed to create invoice'
       const errors = err?.response?.data?.errors || null
 
       resetFieldErrors()
       if (errors && typeof errors === 'object') {
-        for (const [key, arr] of Object.entries(errors)) {
+        Object.entries(errors).forEach(([key, arr]) => {
           if (Array.isArray(arr) && arr.length) {
-            fieldErrors[key] = arr[0]
+            ;(fieldErrors as any)[key] = arr[0]
           }
-        }
+        })
         msg = 'Please fix the highlighted fields.'
       }
 
@@ -100,3 +122,5 @@ export function useInvoiceCreate(emit) {
     resetForm,
   }
 }
+
+

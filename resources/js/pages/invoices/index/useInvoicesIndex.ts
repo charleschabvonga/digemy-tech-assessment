@@ -6,12 +6,20 @@ import { usePagination } from '@/composables/usePagination'
 import { useLoading } from '@/composables/useLoading'
 import { formatMoney } from '@/utils/money'
 import { getStateBadgeClass } from '@/utils/state'
+import type { Invoice } from '../show/useInvoiceShow'
 
-export function useInvoicesIndex(emit) {
+type EmitEvent = 'loading' | 'cancel'
+type EmitPayload = boolean | Invoice
+
+type EmitFn =
+  | ((event: EmitEvent, payload?: EmitPayload) => void)
+  | undefined
+
+export function useInvoicesIndex(emit?: EmitFn) {
   const router = useRouter()
   const { showLoading, hideLoading } = useLoading()
 
-  const invoices = ref([])
+  const invoices = ref<Invoice[]>([])
   const loading = ref(true)
   const showCreateModal = ref(false)
 
@@ -28,7 +36,7 @@ export function useInvoicesIndex(emit) {
     watchRouteQuery,
   } = usePagination('Invoices', 5)
 
-  async function fetch(page = null, itemsPerPage = null) {
+  async function fetch(page: number | null = null, itemsPerPage: number | null = null) {
     loading.value = true
     showLoading('Loading invoices...')
     emit?.('loading', true)
@@ -37,12 +45,13 @@ export function useInvoicesIndex(emit) {
       const currentPerPage = itemsPerPage || getCurrentPerPage()
 
       const res = await invoicesApi.list(currentPage, currentPerPage)
-      invoices.value = res.data || []
-      setPagination(res)
+      const data = (res.data || []) as Invoice[]
+      invoices.value = data
+      setPagination(res as any)
     } catch (err) {
       console.error('Failed to fetch invoices:', err)
       invoices.value = []
-      setPagination({})
+      setPagination({} as any)
     } finally {
       loading.value = false
       hideLoading()
@@ -54,7 +63,7 @@ export function useInvoicesIndex(emit) {
     await fetch()
   }
 
-  function handleViewInvoice(id) {
+  function handleViewInvoice(id: number | string) {
     router.push({ name: 'ShowInvoice', params: { id } })
   }
 
@@ -63,57 +72,53 @@ export function useInvoicesIndex(emit) {
     reload()
   }
 
-  function handleCancel(invoice) {
+  function handleCancel(invoice: Invoice) {
     emit?.('cancel', invoice)
   }
 
-  function isRefund(invoice) {
+  function isRefund(invoice: Invoice): boolean {
     const s = invoice?.state_meta?.name
     return s === 'partially_paid' || s === 'fully_paid' || s === 'refunded'
   }
 
-  function canCancel(invoice) {
+  function canCancel(invoice: Invoice): boolean {
     const s = invoice?.state_meta?.name
     return s !== 'cancelled'
   }
 
-  function canShowRestore(invoice) {
+  function canShowRestore(invoice: Invoice): boolean {
     const s = invoice?.state_meta?.name
     return s === 'refunded' || s === 'partially_paid' || s === 'fully_paid'
   }
-  
-  function canShowTrash(invoice) {
+
+  function canShowTrash(invoice: Invoice): boolean {
     const s = invoice?.state_meta?.name
     return s === 'created' || s === 'awaiting_payment'
   }
 
-  function isCancelDisabled(invoice) {
+  function isCancelDisabled(invoice: Invoice): boolean {
     const s = invoice?.state_meta?.name
     return s === 'refunded'
   }
 
-  function formatDate(dateString) {
+  function formatDate(dateString: string | null | undefined): string {
     if (!dateString) return ''
     return dayjs(dateString).format('D MMMM YYYY, HH:mm')
   }
 
-  function handlePerPageChangeWrapper(newPerPage) {
+  function handlePerPageChangeWrapper(newPerPage: number) {
     perPage.value = newPerPage
     handlePerPageChange()
   }
 
-  // wire pagination watcher
   watchRouteQuery((page, per) => {
     fetch(page, per)
   })
 
-  // public API for Index.vue
   return {
-    // state
     invoices,
     loading,
     showCreateModal,
-    // pagination
     pagination,
     perPage,
     visiblePages,
@@ -123,13 +128,11 @@ export function useInvoicesIndex(emit) {
     getCurrentPage,
     getCurrentPerPage,
     setPagination,
-    // actions
     fetch,
     reload,
     handleViewInvoice,
     handleInvoiceCreated,
     handleCancel,
-    // utils
     formatMoney,
     getStateBadgeClass,
     formatDate,
@@ -140,3 +143,5 @@ export function useInvoicesIndex(emit) {
     isCancelDisabled,
   }
 }
+
+

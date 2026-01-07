@@ -18,7 +18,7 @@
           <Button v-if="canSend" variant="primary" icon="mdi:send" :loading="sending" :disabled="sending" @click="handleSend">
             {{ sending ? 'Sending...' : 'Send to Customer' }}
           </Button>
-          <Button v-if="canmakePayment" variant="primary-green" icon="mdi:credit-card" @click="showPaymentForm = true">
+          <Button v-if="canmakePayment" variant="primary-green" icon="mdi:credit-card" @click="openPaymentForm">
             Make Payment
           </Button>
           <Button v-if="canCancel" variant="secondary" icon="mdi:close" :loading="cancelling" :disabled="cancelling" @click="handleCancel">
@@ -53,12 +53,11 @@
           <StatCard
             v-if="invoice?.state_meta"
             label="Status"
-            value=""
-            :value-color="getStatusColor(invoice.state_meta?.intent)"
+            :value="''"
             icon="mdi:flag"
           >
             <template #value>
-              <span :class="[statusBadgeBaseClass, getStateBadgeClass(invoice.state_meta?.intent)]">
+              <span :class="[statusBadgeBaseClass, getStateBadgeClass(invoice.state_meta?.intent ?? 'general')]">
                 {{ invoice.state_meta?.display || invoice.state_meta?.name }}
               </span>
             </template>
@@ -69,9 +68,10 @@
         <div>
           <CreatePayment
             v-if="showPaymentForm"
+            :show="showPaymentForm"
             :invoice-id="invoice.id"
             :max-amount="outstanding"
-            @close="showPaymentForm = false"
+            @close="closePaymentForm"
             @created="handlePaymentCreated"
           />
 
@@ -140,7 +140,7 @@
     />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import { css } from '../../../../styled-system/css'
@@ -153,19 +153,26 @@ import Tooltip from '@/components/Tooltip.vue'
 import CreatePayment from '../payments/Create.vue'
 import { useInvoiceShow } from './show/useInvoiceShow'
 
-const props = defineProps({
-  id: {
-    type: [Number, String],
-    required: true,
-  },
+const props = defineProps<{
+  id: number | string
+}>()
+
+const emit = defineEmits<{
+  (e: 'loading', value: boolean): void
+  (e: 'cancel', invoice: any): void
+}>()
+
+const vm = useInvoiceShow({ id: props.id }, (event, payload) => {
+  if (event === 'loading') {
+    emit('loading', Boolean(payload))
+  }
 })
 
-const emit = defineEmits(['loading'])
-
-const vm = useInvoiceShow(props, emit)
-
 onMounted(() => vm.loadInvoice())
-watch(() => props.id, () => vm.loadInvoice())
+watch(
+  () => props.id,
+  () => vm.loadInvoice(),
+)
 
 const {
   invoice,
@@ -187,9 +194,7 @@ const {
   canCancel,
   canmakePayment,
   canReversePayment,
-  isRefund,
   paymentTableDescription,
-  loadInvoice,
   goBack,
   handleSend,
   handleCancel,
@@ -200,7 +205,8 @@ const {
   formatMoney,
   formatDate,
   getStateBadgeClass,
-  getStatusColor,
+  openPaymentForm,
+  closePaymentForm,
 } = vm
 
 const cardClass = css({

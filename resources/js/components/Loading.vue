@@ -12,15 +12,16 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { css } from '../../../styled-system/css'
 
-const props = defineProps({
-  message: {
-    type: String,
-    default: 'Loading...',
-  },
+interface LoadingProps {
+  message?: string
+}
+
+withDefaults(defineProps<LoadingProps>(), {
+  message: 'Loading...',
 })
 
 const backdropClass = css({

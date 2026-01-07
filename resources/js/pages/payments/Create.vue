@@ -50,7 +50,7 @@
           variant="primary"
           icon="mdi:credit-card"
           :loading="loading"
-          :disabled="loading || parseFloat(amount || 0) > parseFloat(maxAmount)"
+          :disabled="loading || parseFloat(amount || '0') > parseFloat(String(maxAmount))"
         >
           {{ loading ? 'Adding...' : 'Pay now' }}
         </Button>
@@ -59,7 +59,7 @@
   </FormModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue'
 import { Icon } from '@iconify/vue'
 import { css } from '../../../../styled-system/css'
@@ -69,22 +69,16 @@ import Button from '@/components/Button.vue'
 import FormModal from '@/components/FormModal.vue'
 import { formatMoney } from '@/utils/money'
 
-const props = defineProps({
-  show: {
-    type: Boolean,
-    default: true,
-  },
-  invoiceId: {
-    type: [Number, String],
-    required: true,
-  },
-  maxAmount: {
-    type: [Number, String],
-    required: true,
-  },
-})
+const props = defineProps<{
+  show?: boolean
+  invoiceId: number | string
+  maxAmount: number | string
+}>()
 
-const emit = defineEmits(['close', 'created'])
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'created'): void
+}>()
 
 const { toast } = useToast()
 const amount = ref('')
@@ -171,7 +165,7 @@ const handleSubmit = async () => {
     return
   }
 
-  if (amountValue > parseFloat(props.maxAmount)) {
+  if (amountValue > parseFloat(String(props.maxAmount))) {
     error.value = 'Amount cannot exceed outstanding balance'
     return
   }
@@ -190,9 +184,10 @@ const handleSubmit = async () => {
     emit('created')
     emit('close')
   } catch (err) {
+    const anyErr = err as any
     const errorMsg =
-      err.response?.data?.message ||
-      err.response?.data?.errors?.amount?.[0] ||
+      anyErr?.response?.data?.message ||
+      anyErr?.response?.data?.errors?.amount?.[0] ||
       'Failed to add payment'
     error.value = errorMsg
     toast({

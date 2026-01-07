@@ -1,6 +1,15 @@
 import { css } from '../../../styled-system/css'
 
-const badgeClasses = {
+export type StateIntent =
+  | 'success'
+  | 'danger'
+  | 'warning'
+  | 'info'
+  | 'primary'
+  | 'secondary'
+  | 'general'
+
+const badgeClasses: Record<StateIntent, string> = {
   success: css({
     backgroundColor: 'rgb(220, 252, 231)',
     color: 'rgb(22, 163, 74)',
@@ -73,12 +82,12 @@ const badgeClasses = {
   }),
 }
 
-export function getStateBadgeClass(intent) {
-  return badgeClasses[intent] || badgeClasses.general
+export function getStateBadgeClass(intent: StateIntent): string {
+  return badgeClasses[intent]
 }
 
-export function getStatusColor(intent) {
-  const colors = {
+export function getStatusColor(intent: StateIntent): string {
+  const colors: Record<StateIntent, string> = {
     success: 'green',
     danger: 'red',
     warning: 'yellow',
@@ -87,5 +96,7 @@ export function getStatusColor(intent) {
     secondary: 'gray',
     general: 'gray',
   }
-  return colors[intent] || 'gray'
+  return colors[intent]
 }
+
+

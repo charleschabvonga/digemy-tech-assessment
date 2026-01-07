@@ -1,38 +1,64 @@
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
 
-const toasts = ref([]);
+export type ToastVariant = 'default' | 'destructive'
 
-const TOAST_LIMIT = 3;
-let toastCount = 0;
+export interface ToastAction {
+  label: string
+  onClick: () => void
+}
 
-function toast(props) {
-  const id = `toast-${++toastCount}`;
-  const newToast = {
+export interface ToastProps {
+  id?: string
+  title?: string
+  description?: string
+  action?: ToastAction | null
+  variant?: ToastVariant
+  duration?: number
+}
+
+export interface ToastState extends ToastProps {
+  id: string
+}
+
+export interface ToastHandle {
+  id: string
+  dismiss: () => void
+  update: (newProps: Partial<ToastProps>) => void
+}
+
+const toasts = ref<ToastState[]>([])
+
+const TOAST_LIMIT = 3
+let toastCount = 0
+
+function toast(props: ToastProps): ToastHandle {
+  const id = `toast-${++toastCount}`
+  const newToast: ToastState = {
     id,
-    ...props
-  };
+    ...props,
+  }
 
-  toasts.value = [newToast, ...toasts.value].slice(0, TOAST_LIMIT);
+  toasts.value = [newToast, ...toasts.value].slice(0, TOAST_LIMIT)
 
   return {
     id,
     dismiss: () => dismiss(id),
-    update: (newProps) => update(id, newProps)
-  };
-}
-
-function dismiss(toastId) {
-  if (toastId) {
-    toasts.value = toasts.value.filter((t) => t.id !== toastId);
-  } else {
-    toasts.value = [];
+    update: newProps => update(id, newProps),
   }
 }
 
-function update(toastId, props) {
-  toasts.value = toasts.value.map((t) =>
-    t.id === toastId ? { ...t, ...props } : t
-  );
+function dismiss(toastId?: string): void {
+  if (toastId) {
+    toasts.value = toasts.value.filter(t => t.id !== toastId)
+  } else {
+    toasts.value = []
+  }
+}
+
+function update(toastId: string, props: Partial<ToastProps>): void {
+  toasts.value = toasts.value.map(t =>
+    t.id === toastId ? { ...t, ...props } : t,
+  )
 }
 
 export function useToast() {
@@ -40,7 +66,6 @@ export function useToast() {
     toast,
     dismiss,
     update,
-    toasts: computed(() => toasts.value)
-  };
+    toasts: computed(() => toasts.value),
+  }
 }
-

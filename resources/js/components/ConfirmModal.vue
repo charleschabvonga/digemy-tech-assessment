@@ -34,34 +34,29 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { css } from '../../../styled-system/css'
 
-const props = defineProps({
-  show: {
-    type: Boolean,
-    default: false,
-  },
-  title: {
-    type: String,
-    default: 'Confirm Action',
-  },
-  message: {
-    type: String,
-    required: true,
-  },
-  confirmText: {
-    type: String,
-    default: 'Confirm',
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
+interface ConfirmModalProps {
+  show?: boolean
+  title?: string
+  message: string
+  confirmText?: string
+  loading?: boolean
+}
+
+withDefaults(defineProps<ConfirmModalProps>(), {
+  show: false,
+  title: 'Confirm Action',
+  confirmText: 'Confirm',
+  loading: false,
 })
 
-const emit = defineEmits(['confirm', 'cancel'])
+const emit = defineEmits<{
+  (e: 'confirm'): void
+  (e: 'cancel'): void
+}>()
 
 const backdropClass = css({
   position: 'fixed',

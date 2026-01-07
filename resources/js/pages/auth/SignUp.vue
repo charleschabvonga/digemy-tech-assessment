@@ -105,7 +105,7 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
@@ -236,8 +236,12 @@ async function handleSubmit() {
     
     router.push('/invoices')
   } catch (err) {
-    const msg = err?.response?.data?.message || err?.message || 'Sign-up failed. Please try again.'
-    const errors = err?.response?.data?.errors
+    const anyErr = err as any
+    const msg =
+      anyErr?.response?.data?.message ||
+      anyErr?.message ||
+      'Sign-up failed. Please try again.'
+    const errors = anyErr?.response?.data?.errors
     if (errors && typeof errors === 'object') {
       const firstError = Object.values(errors).flat()[0]
       error.value = firstError || msg

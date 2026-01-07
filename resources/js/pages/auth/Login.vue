@@ -61,7 +61,7 @@
   </AuthLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
@@ -176,7 +176,11 @@ async function handleSubmit() {
         : '/invoices'
     )
   } catch (err) {
-    const msg = err?.response?.data?.message || err?.message || 'Sign-in failed. Please try again.'
+    const anyErr = err as any
+    const msg =
+      anyErr?.response?.data?.message ||
+      anyErr?.message ||
+      'Sign-in failed. Please try again.'
     error.value = msg
     toast({ title: 'Error', description: msg, variant: 'destructive' })
   } finally {

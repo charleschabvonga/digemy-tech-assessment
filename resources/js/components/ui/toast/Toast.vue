@@ -50,38 +50,27 @@
   </Transition>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { Icon } from '@iconify/vue'
 import { css } from '../../../../../styled-system/css'
-import { useToast } from './use-toast.js'
+import { useToast, type ToastAction, type ToastVariant } from './use-toast'
 
-const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-    title: {
-    type: String,
-    default: '',
-  },
-  description: {
-    type: String,
-    default: '',
-  },
-  action: {
-    type: Object,
-    default: null,
-  },
-  variant: {
-    type: String,
-    default: 'default',
-    validator: value => ['default', 'destructive'].includes(value),
-  },
-  duration: {
-    type: Number,
-    default: 3000,
-  },
+interface ToastComponentProps {
+  id: string
+  title?: string
+  description?: string
+  action?: ToastAction | null
+  variant?: ToastVariant
+  duration?: number
+}
+
+const props = withDefaults(defineProps<ToastComponentProps>(), {
+  title: '',
+  description: '',
+  action: null,
+  variant: 'default',
+  duration: 3000,
 })
 
 const { dismiss } = useToast()
@@ -139,20 +128,19 @@ const contentWrapperClass = css({
   columnGap: '0.75rem',
 })
 
-const iconBaseClass = css({
+const iconSuccessClass = css({
   flexShrink: 0,
   marginTop: '0.125rem',
   width: '1.25rem',
   height: '1.25rem',
-})
-
-const iconSuccessClass = css({
-  ...iconBaseClass,
   color: 'rgb(22, 163, 74)',
 })
 
 const iconDestructiveClass = css({
-  ...iconBaseClass,
+  flexShrink: 0,
+  marginTop: '0.125rem',
+  width: '1.25rem',
+  height: '1.25rem',
   color: 'rgb(220, 38, 38)',
 })
 
@@ -186,7 +174,7 @@ const actionsWrapperClass = css({
   columnGap: '0.5rem',
 })
 
-const actionBaseClass = css({
+const actionDefaultClass = css({
   display: 'inline-flex',
   alignItems: 'center',
   justifyContent: 'center',
@@ -201,10 +189,6 @@ const actionBaseClass = css({
   outline: 'none',
   transitionProperty: 'background-color, color, border-color',
   transitionDuration: '150ms',
-})
-
-const actionDefaultClass = css({
-  ...actionBaseClass,
   borderColor: 'rgb(229, 231, 235)',
   color: 'rgb(17, 24, 39)',
   _hover: {
@@ -213,7 +197,20 @@ const actionDefaultClass = css({
 })
 
 const actionDestructiveClass = css({
-  ...actionBaseClass,
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '2rem',
+  paddingInline: '0.75rem',
+  borderRadius: '0.375rem',
+  fontSize: '0.75rem',
+  fontWeight: 500,
+  borderWidth: '1px',
+  backgroundColor: 'transparent',
+  cursor: 'pointer',
+  outline: 'none',
+  transitionProperty: 'background-color, color, border-color',
+  transitionDuration: '150ms',
   borderColor: 'rgb(239, 68, 68)',
   color: 'rgb(127, 29, 29)',
   _hover: {
