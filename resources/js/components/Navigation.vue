@@ -1,19 +1,27 @@
 <template>
-  <nav v-show="isAuthenticated" class="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm border-b" aria-label="Main navigation">
-    <div v-if="isLoading" class="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 overflow-hidden" aria-live="polite">
-      <div class="h-full bg-green-500 animate-progress"></div>
+  <nav
+    v-show="isAuthenticated"
+    :class="navClass"
+    aria-label="Main navigation"
+  >
+    <div
+      v-if="isLoading"
+      :class="loadingBarWrapperClass"
+      aria-live="polite"
+    >
+      <div :class="loadingBarClass"></div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
+    <div :class="innerContainerClass">
+      <div :class="innerContentClass">
         <Logo />
 
-        <div class="flex items-center space-x-3">
-          <div v-if="user" class="flex items-center gap-2 px-2 py-1 bg-gray-50 border border-gray-200 rounded-full">
-            <div class="flex items-center justify-center w-6 h-6 bg-blue-600 text-white text-xs font-semibold rounded-full" aria-hidden="true">
+        <div :class="rightSectionClass">
+          <div v-if="user" :class="userChipClass">
+            <div :class="userAvatarClass" aria-hidden="true">
               {{ userInitials }}
             </div>
-            <span class="text-xs font-medium text-gray-900">{{ userDisplayName }}</span>
+            <span :class="userNameClass">{{ userDisplayName }}</span>
           </div>
 
           <ActionButton
@@ -33,6 +41,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { css } from '../../../styled-system/css'
 import Logo from './Logo.vue'
 import ActionButton from './ActionButton.vue'
 import { useAuth } from '@/composables/useAuth'
@@ -42,11 +51,93 @@ const { user, isAuthenticated } = useAuth()
 defineProps({
   isLoading: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 defineEmits(['logout'])
+
+const navClass = css({
+  position: 'fixed',
+  insetBlockStart: 0,
+  insetInline: 0,
+  zIndex: 50,
+  backgroundColor: 'white',
+  boxShadow: '0 1px 2px rgba(15, 23, 42, 0.06)',
+  borderBottomWidth: '1px',
+  borderBottomColor: 'rgb(229, 231, 235)',
+})
+
+const loadingBarWrapperClass = css({
+  position: 'absolute',
+  insetInline: 0,
+  insetBlockEnd: 0,
+  height: '0.25rem',
+  backgroundColor: 'rgb(229, 231, 235)',
+  overflow: 'hidden',
+})
+
+const loadingBarClass = css({
+  height: '100%',
+  backgroundColor: 'rgb(34, 197, 94)',
+  animation: 'progress 1.5s ease-in-out infinite',
+})
+
+const innerContainerClass = css({
+  maxWidth: '80rem',
+  marginInline: 'auto',
+  paddingInline: '1rem',
+  '@media (min-width: 640px)': {
+    paddingInline: '1.5rem',
+  },
+  '@media (min-width: 1024px)': {
+    paddingInline: '2rem',
+  },
+})
+
+const innerContentClass = css({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  height: '4rem',
+})
+
+const rightSectionClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.75rem',
+})
+
+const userChipClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.5rem',
+  paddingInline: '0.5rem',
+  paddingBlock: '0.25rem',
+  backgroundColor: 'rgb(249, 250, 251)',
+  borderWidth: '1px',
+  borderColor: 'rgb(229, 231, 235)',
+  borderRadius: '9999px',
+})
+
+const userAvatarClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '1.5rem',
+  height: '1.5rem',
+  borderRadius: '9999px',
+  backgroundColor: 'rgb(37, 99, 235)',
+  color: 'white',
+  fontSize: '0.75rem',
+  fontWeight: 600,
+})
+
+const userNameClass = css({
+  fontSize: '0.75rem',
+  fontWeight: 500,
+  color: 'rgb(17, 24, 39)',
+})
 
 const userDisplayName = computed(() => {
   const u = user.value
@@ -65,12 +156,4 @@ const userInitials = computed(() => {
   return (prefix.slice(0, 2) || 'U').toUpperCase()
 })
 </script>
-
-<style scoped>
-@keyframes progress {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-.animate-progress { animation: progress 1.5s ease-in-out infinite; }
-</style>
 

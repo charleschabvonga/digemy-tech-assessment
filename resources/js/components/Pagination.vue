@@ -1,25 +1,25 @@
 <template>
-  <div v-if="pagination" :class="['px-6 py-3 bg-white', showBorderTop ? 'border-t border-gray-200' : '']">
-    <div class="flex items-center justify-between flex-wrap gap-3">
-      <div class="flex items-center gap-3">
-        <div class="text-xs text-gray-700">
+  <div v-if="pagination" :class="[containerClass, showBorderTop ? containerBorderClass : null]">
+    <div :class="innerClass">
+      <div :class="leftSectionClass">
+        <div :class="summaryTextClass">
           Showing
-          <span class="font-medium">{{ pagination.from || 0 }}</span>
+          <span :class="summaryHighlightClass">{{ pagination.from || 0 }}</span>
           to
-          <span class="font-medium">{{ pagination.to || 0 }}</span>
+          <span :class="summaryHighlightClass">{{ pagination.to || 0 }}</span>
           of
-          <span class="font-medium">{{ pagination.total || 0 }}</span>
+          <span :class="summaryHighlightClass">{{ pagination.total || 0 }}</span>
           results
         </div>
 
-        <div class="flex items-center gap-2">
-          <label for="perPage" class="text-xs text-gray-700">Per page:</label>
+        <div :class="perPageWrapperClass">
+          <label for="perPage" :class="summaryTextClass">Per page:</label>
           <select
             id="perPage"
             :value="perPage"
             @change="handlePerPageChange"
             :disabled="loading"
-            class="px-2 py-1 text-xs border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            :class="perPageSelectClass"
           >
             <option value="5">5</option>
             <option value="10">10</option>
@@ -29,38 +29,33 @@
         </div>
       </div>
 
-      <div v-if="pagination.last_page > 1" class="flex items-center gap-1">
+      <div v-if="pagination.last_page > 1" :class="rightSectionClass">
         <button
           @click="handleGoToPage(1)"
           :disabled="pagination.current_page === 1 || loading"
-          class="px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          :class="navButtonClass"
           title="First page"
           type="button"
         >
-          <Icon icon="mdi:page-first" class="w-4 h-4" />
+          <Icon icon="mdi:page-first" :class="navIconClass" />
         </button>
 
         <button
           @click="handleGoToPage(pagination.current_page - 1)"
           :disabled="!pagination.prev_page_url || loading"
-          class="px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          :class="navButtonClass"
           type="button"
         >
           Previous
         </button>
 
-        <div class="flex items-center gap-1">
+        <div :class="pageWrapperClass">
           <button
             v-for="page in visiblePages"
             :key="page"
             @click="handleGoToPage(page)"
             :disabled="loading || page === pagination.current_page"
-            :class="[
-              'px-2 py-1 text-xs font-medium rounded-md',
-              page === pagination.current_page
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed'
-            ]"
+            :class="page === pagination.current_page ? pageActiveClass : pageButtonClass"
             type="button"
           >
             {{ page }}
@@ -70,7 +65,7 @@
         <button
           @click="handleGoToPage(pagination.current_page + 1)"
           :disabled="!pagination.next_page_url || loading"
-          class="px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          :class="navButtonClass"
           type="button"
         >
           Next
@@ -79,11 +74,11 @@
         <button
           @click="handleGoToPage(pagination.last_page)"
           :disabled="pagination.current_page === pagination.last_page || loading"
-          class="px-2 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          :class="navButtonClass"
           title="Last page"
           type="button"
         >
-          <Icon icon="mdi:page-last" class="w-4 h-4" />
+          <Icon icon="mdi:page-last" :class="navIconClass" />
         </button>
       </div>
     </div>
@@ -92,6 +87,7 @@
 
 <script setup>
 import { Icon } from '@iconify/vue'
+import { css } from '../../../styled-system/css'
 
 const props = defineProps({
   pagination: {
@@ -117,6 +113,141 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['page-change', 'per-page-change'])
+
+const containerClass = css({
+  paddingInline: '1.5rem',
+  paddingBlock: '0.75rem',
+  backgroundColor: 'white',
+})
+
+const containerBorderClass = css({
+  borderTopWidth: '1px',
+  borderTopColor: 'rgb(229, 231, 235)',
+})
+
+const innerClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+  gap: '0.75rem',
+})
+
+const leftSectionClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.75rem',
+})
+
+const summaryTextClass = css({
+  fontSize: '0.75rem',
+  color: 'rgb(55, 65, 81)',
+})
+
+const summaryHighlightClass = css({
+  fontWeight: 500,
+})
+
+const perPageWrapperClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.5rem',
+})
+
+const perPageSelectClass = css({
+  paddingInline: '0.5rem',
+  paddingBlock: '0.25rem',
+  fontSize: '0.75rem',
+  borderWidth: '1px',
+  borderColor: 'rgb(209, 213, 219)',
+  borderRadius: '0.375rem',
+  backgroundColor: 'white',
+  outline: 'none',
+  _focus: {
+    boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.5)',
+    borderColor: 'rgb(59, 130, 246)',
+  },
+  _disabled: {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
+})
+
+const rightSectionClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.25rem',
+})
+
+const pageWrapperClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.25rem',
+})
+
+const navButtonBaseClass = css({
+  paddingInline: '0.5rem',
+  paddingBlock: '0.25rem',
+  fontSize: '0.75rem',
+  fontWeight: 500,
+  color: 'rgb(55, 65, 81)',
+  backgroundColor: 'white',
+  borderWidth: '1px',
+  borderColor: 'rgb(209, 213, 219)',
+  borderRadius: '0.375rem',
+  cursor: 'pointer',
+  transitionProperty: 'background-color',
+  transitionDuration: '150ms',
+  display: 'inline-flex',
+  alignItems: 'center',
+  columnGap: '0.25rem',
+  _hover: {
+    backgroundColor: 'rgb(249, 250, 251)',
+  },
+  _disabled: {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
+})
+
+const navButtonClass = navButtonBaseClass
+
+const navIconClass = css({
+  width: '1rem',
+  height: '1rem',
+})
+
+const pageButtonBaseClass = css({
+  paddingInline: '0.5rem',
+  paddingBlock: '0.25rem',
+  fontSize: '0.75rem',
+  fontWeight: 500,
+  borderRadius: '0.375rem',
+  cursor: 'pointer',
+})
+
+const pageButtonClass = css({
+  ...pageButtonBaseClass,
+  color: 'rgb(55, 65, 81)',
+  backgroundColor: 'white',
+  borderWidth: '1px',
+  borderColor: 'rgb(209, 213, 219)',
+  transitionProperty: 'background-color',
+  transitionDuration: '150ms',
+  _hover: {
+    backgroundColor: 'rgb(249, 250, 251)',
+  },
+  _disabled: {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
+})
+
+const pageActiveClass = css({
+  ...pageButtonBaseClass,
+  backgroundColor: 'rgb(37, 99, 235)',
+  color: 'white',
+})
 
 function handleGoToPage(page) {
   emit('page-change', page)

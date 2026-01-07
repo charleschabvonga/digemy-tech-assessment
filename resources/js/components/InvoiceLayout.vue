@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
+  <div :class="layoutClass">
     <Navigation :is-loading="isLoading || loggingOut" @logout="handleLogout" />
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-24">
+    <main :class="mainClass">
       <router-view v-slot="{ Component }">
         <component
           :is="Component"
@@ -32,6 +32,7 @@
 <script setup>
 import { ref, computed, nextTick, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { css } from '../../../styled-system/css'
 import Navigation from './Navigation.vue'
 import ConfirmModal from './ConfirmModal.vue'
 import Toaster from './ui/toast/Toaster.vue'
@@ -40,6 +41,25 @@ import { invoicesApi } from '../api/invoices'
 import { useAuth } from '../composables/useAuth'
 import { useLoading } from '../composables/useLoading'
 import Loading from './Loading.vue'
+
+const layoutClass = css({
+  minHeight: '100vh',
+  backgroundColor: 'rgb(243, 244, 246)',
+})
+
+const mainClass = css({
+  maxWidth: '80rem',
+  marginInline: 'auto',
+  paddingInline: '1rem',
+  paddingBlock: '2rem',
+  paddingTop: '6rem',
+  '@media (min-width: 640px)': {
+    paddingInline: '1.5rem',
+  },
+  '@media (min-width: 1024px)': {
+    paddingInline: '2rem',
+  },
+})
 
 const router = useRouter()
 const route = useRoute()

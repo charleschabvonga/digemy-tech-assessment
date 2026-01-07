@@ -6,20 +6,20 @@
     @close="$emit('close')"
   >
     <template #title>
-      <div class="flex items-center gap-3">
-        <Icon icon="mdi:file-document" class="w-5 h-5 text-blue-600 flex-shrink-0" />
-        <span class="text-lg font-semibold text-blue-600">CREATE INVOICE</span>
+      <div :class="headerClass">
+        <Icon icon="mdi:file-document" :class="headerIconClass" />
+        <span :class="headerTitleClass">CREATE INVOICE</span>
       </div>
     </template>
 
     <form @submit.prevent="handleSubmit" :aria-busy="loading">
-      <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+      <div v-if="error" :class="errorClass">
         {{ error }}
       </div>
 
       <div>
-        <label for="title" class="block text-sm font-medium text-gray-700 mb-1">
-          Title <span class="text-red-600">*</span>
+        <label for="title" :class="labelClass">
+          Title <span :class="labelRequiredClass">*</span>
         </label>
         <input
           id="title"
@@ -27,15 +27,15 @@
           type="text"
           required
           :aria-invalid="Boolean(fieldErrors.title)"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          :class="inputClass"
           placeholder="Invoice title"
           :disabled="loading"
         />
-        <p v-if="fieldErrors.title" class="mt-1 text-xs text-red-600">{{ fieldErrors.title }}</p>
+        <p v-if="fieldErrors.title" :class="fieldErrorTextClass">{{ fieldErrors.title }}</p>
       </div>
 
       <div>
-        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="description" :class="labelClass">
           Description
         </label>
         <textarea
@@ -43,16 +43,18 @@
           v-model.trim="form.description"
           rows="3"
           :aria-invalid="Boolean(fieldErrors.description)"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          :class="textareaClass"
           placeholder="Invoice description"
           :disabled="loading"
         ></textarea>
-        <p v-if="fieldErrors.description" class="mt-1 text-xs text-red-600">{{ fieldErrors.description }}</p>
+        <p v-if="fieldErrors.description" :class="fieldErrorTextClass">
+          {{ fieldErrors.description }}
+        </p>
       </div>
 
       <div>
-        <label for="totalAmount" class="block text-sm font-medium text-gray-700 mb-1">
-          Total Amount <span class="text-red-600">*</span>
+        <label for="totalAmount" :class="labelClass">
+          Total Amount <span :class="labelRequiredClass">*</span>
         </label>
         <input
           id="totalAmount"
@@ -63,14 +65,16 @@
           min="0.01"
           required
           :aria-invalid="Boolean(fieldErrors.total_amount)"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          :class="inputClass"
           placeholder="0.00"
           :disabled="loading"
         />
-        <p v-if="fieldErrors.total_amount" class="mt-1 text-xs text-red-600">{{ fieldErrors.total_amount }}</p>
+        <p v-if="fieldErrors.total_amount" :class="fieldErrorTextClass">
+          {{ fieldErrors.total_amount }}
+        </p>
       </div>
 
-      <div class="flex justify-end gap-2 pt-4">
+      <div :class="actionsClass">
         <Button
           type="button"
           variant="secondary"
@@ -97,6 +101,7 @@
 <script setup>
 import { watch, toRefs } from 'vue'
 import { Icon } from '@iconify/vue'
+import { css } from '../../../../styled-system/css'
 import Button from '@/components/Button.vue'
 import FormModal from '@/components/FormModal.vue'
 import { useInvoiceCreate } from './create/useInvoiceCreate'
@@ -111,5 +116,81 @@ const { show } = toRefs(props)
 
 watch(show, (val) => {
   if (!val) resetForm()
+})
+
+const headerClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.75rem',
+})
+
+const headerIconClass = css({
+  width: '1.25rem',
+  height: '1.25rem',
+  color: 'rgb(37, 99, 235)',
+  flexShrink: 0,
+})
+
+const headerTitleClass = css({
+  fontSize: '1.125rem',
+  fontWeight: 600,
+  color: 'rgb(37, 99, 235)',
+})
+
+const errorClass = css({
+  backgroundColor: 'rgb(254, 242, 242)',
+  borderWidth: '1px',
+  borderColor: 'rgb(254, 202, 202)',
+  color: 'rgb(185, 28, 28)',
+  paddingInline: '1rem',
+  paddingBlock: '0.75rem',
+  borderRadius: '0.375rem',
+  fontSize: '0.875rem',
+  marginBottom: '0.75rem',
+})
+
+const labelClass = css({
+  display: 'block',
+  fontSize: '0.875rem',
+  fontWeight: 500,
+  color: 'rgb(55, 65, 81)',
+  marginBottom: '0.25rem',
+})
+
+const labelRequiredClass = css({
+  color: 'rgb(220, 38, 38)',
+})
+
+const inputBase = {
+  width: '100%',
+  paddingInline: '0.75rem',
+  paddingBlock: '0.5rem',
+  borderWidth: '1px',
+  borderColor: 'rgb(209, 213, 219)',
+  borderRadius: '0.375rem',
+  fontSize: '0.875rem',
+  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+  outline: 'none',
+  _focus: {
+    outline: 'none',
+    boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.5)',
+    borderColor: 'rgb(59, 130, 246)',
+  },
+}
+
+const inputClass = css(inputBase)
+const textareaClass = css({ ...inputBase })
+
+const fieldErrorTextClass = css({
+  marginTop: '0.25rem',
+  fontSize: '0.75rem',
+  color: 'rgb(220, 38, 38)',
+})
+
+const actionsClass = css({
+  display: 'flex',
+  justifyContent: 'flex-end',
+  columnGap: '0.5rem',
+  paddingTop: '1rem',
 })
 </script>

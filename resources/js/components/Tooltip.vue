@@ -1,63 +1,156 @@
 <template>
-  <div class="relative inline-block group">
+  <div
+    :class="wrapperClass"
+    @mouseenter="isHovered = true"
+    @mouseleave="isHovered = false"
+  >
     <slot></slot>
     <div
-      v-if="text || $slots.tooltip"
-      :class="[
-        'absolute px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-10',
-        positionClasses,
-        multiLine ? 'break-words whitespace-normal max-w-xs' : 'whitespace-nowrap'
-      ]"
+      v-if="(text || $slots.tooltip) && isHovered"
+      :class="tooltipBoxClass"
     >
       <slot name="tooltip">{{ text }}</slot>
-      <div
-        :class="[
-          'absolute border-4 border-transparent',
-          arrowClasses
-        ]"
-      ></div>
+      <div :class="arrowClass"></div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { css } from '../../../styled-system/css'
 
 const props = defineProps({
   text: {
     type: String,
-    default: ''
+    default: '',
   },
   position: {
     type: String,
     default: 'top',
-    validator: (value) => ['top', 'bottom', 'left', 'right', 'top-left'].includes(value)
+    validator: value =>
+      ['top', 'bottom', 'left', 'right', 'top-left'].includes(value),
   },
   multiLine: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
-const positionClasses = computed(() => {
-  const classes = {
-    top: 'bottom-full left-1/2 transform -translate-x-1/2 mb-2',
-    bottom: 'top-full left-1/2 transform -translate-x-1/2 mt-2',
-    left: 'right-full top-1/2 transform -translate-y-1/2 mr-2',
-    right: 'left-full top-1/2 transform -translate-y-1/2 ml-2',
-    'top-left': 'bottom-full left-0 mb-2'
-  }
-  return classes[props.position] || classes.top
+const isHovered = ref(false)
+
+const wrapperClass = css({
+  position: 'relative',
+  display: 'inline-block',
 })
 
-const arrowClasses = computed(() => {
-  const classes = {
-    top: 'top-full left-1/2 transform -translate-x-1/2 -mt-1 border-t-gray-900',
-    bottom: 'bottom-full left-1/2 transform -translate-x-1/2 -mb-1 border-b-gray-900',
-    left: 'left-full top-1/2 transform -translate-y-1/2 -ml-1 border-l-gray-900',
-    right: 'right-full top-1/2 transform -translate-y-1/2 -mr-1 border-r-gray-900',
-    'top-left': 'top-full left-4 -mt-1 border-t-gray-900'
-  }
-  return classes[props.position] || classes.top
-})
+const tooltipBase = {
+  position: 'absolute',
+  paddingInline: '0.75rem',
+  paddingBlock: '0.5rem',
+  backgroundColor: 'rgb(17, 24, 39)',
+  color: 'white',
+  fontSize: '0.75rem',
+  borderRadius: '0.5rem',
+  zIndex: 10,
+  transitionProperty: 'opacity',
+  transitionDuration: '200ms',
+}
+
+const tooltipPositions = {
+  top: {
+    bottom: '100%',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    marginBottom: '0.5rem',
+  },
+  bottom: {
+    top: '100%',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    marginTop: '0.5rem',
+  },
+  left: {
+    right: '100%',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    marginRight: '0.5rem',
+  },
+  right: {
+    left: '100%',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    marginLeft: '0.5rem',
+  },
+  'top-left': {
+    bottom: '100%',
+    left: 0,
+    marginBottom: '0.5rem',
+  },
+}
+
+const arrowBase = {
+  position: 'absolute',
+  borderWidth: '0.25rem',
+  borderColor: 'transparent',
+}
+
+const arrowPositions = {
+  top: {
+    top: '100%',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    marginTop: '-0.25rem',
+    borderTopColor: 'rgb(17, 24, 39)',
+  },
+  bottom: {
+    bottom: '100%',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    marginBottom: '-0.25rem',
+    borderBottomColor: 'rgb(17, 24, 39)',
+  },
+  left: {
+    left: '100%',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    marginLeft: '-0.25rem',
+    borderLeftColor: 'rgb(17, 24, 39)',
+  },
+  right: {
+    right: '100%',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    marginRight: '-0.25rem',
+    borderRightColor: 'rgb(17, 24, 39)',
+  },
+  'top-left': {
+    top: '100%',
+    left: '1rem',
+    marginTop: '-0.25rem',
+    borderTopColor: 'rgb(17, 24, 39)',
+  },
+}
+
+const tooltipBoxClass = computed(() =>
+  css({
+    ...tooltipBase,
+    ...(tooltipPositions[props.position] || tooltipPositions.top),
+    ...(props.multiLine
+      ? {
+          wordBreak: 'break-word',
+          whiteSpace: 'normal',
+          maxWidth: '16rem',
+        }
+      : {
+          whiteSpace: 'nowrap',
+        }),
+  }),
+)
+
+const arrowClass = computed(() =>
+  css({
+    ...arrowBase,
+    ...(arrowPositions[props.position] || arrowPositions.top),
+  }),
+)
 </script>

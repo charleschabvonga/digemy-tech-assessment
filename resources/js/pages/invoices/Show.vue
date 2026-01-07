@@ -1,21 +1,20 @@
 <template>
   <Loading v-if="loading" message="Loading invoice details..." />
 
-  <div v-else class="bg-white shadow rounded-lg p-6">
-      <!-- header -->
-      <div class="flex justify-between items-center mb-6">
-        <div class="flex items-center gap-4 flex-wrap">
+  <div v-else :class="cardClass">
+      <div :class="headerClass">
+        <div :class="headerLeftClass">
           <Tooltip text="Back to Invoices">
-            <button @click="goBack" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md" type="button">
-              <Icon icon="mdi:arrow-left" class="w-5 h-5" />
+            <button @click="goBack" :class="backButtonClass" type="button">
+              <Icon icon="mdi:arrow-left" :class="backIconClass" />
             </button>
           </Tooltip>
-          <div class="flex items-center gap-2">
-            <Icon icon="mdi:file-document" class="w-6 h-6 text-blue-600" />
-            <h3 class="text-2xl font-bold text-blue-600">INVOICE #{{ invoice?.id }}</h3>
+          <div :class="headerTitleWrapperClass">
+            <Icon icon="mdi:file-document" :class="headerIconClass" />
+            <h3 :class="headerTitleClass">INVOICE #{{ invoice?.id }}</h3>
           </div>
         </div>
-        <div class="flex items-center gap-3">
+        <div :class="headerActionsClass">
           <Button v-if="canSend" variant="primary" icon="mdi:send" :loading="sending" :disabled="sending" @click="handleSend">
             {{ sending ? 'Sending...' : 'Send to Customer' }}
           </Button>
@@ -28,11 +27,11 @@
         </div>
       </div>
 
-      <div v-if="error" class="text-center py-8 text-red-600">{{ error }}</div>
+      <div v-if="error" :class="errorClass">{{ error }}</div>
 
       <div v-else-if="invoice">
         <!-- stats -->
-        <div class="grid grid-cols-4 gap-4 mb-6">
+        <div :class="statsGridClass">
           <StatCard
             label="Total Amount"
             :value="formatMoney(invoice.total_amount)"
@@ -59,10 +58,7 @@
             icon="mdi:flag"
           >
             <template #value>
-              <span
-                :class="getStateBadgeClass(invoice.state_meta?.intent)"
-                class="px-3 py-1 text-sm font-medium rounded-full inline-block"
-              >
+              <span :class="[statusBadgeBaseClass, getStateBadgeClass(invoice.state_meta?.intent)]">
                 {{ invoice.state_meta?.display || invoice.state_meta?.name }}
               </span>
             </template>
@@ -79,7 +75,7 @@
             @created="handlePaymentCreated"
           />
 
-          <div class="bg-white shadow rounded-lg overflow-x-auto">
+          <div :class="paymentsCardClass">
             <EntityTable
               title="PAYMENTS"
               icon="mdi:credit-card"
@@ -90,22 +86,30 @@
               empty-state-message="No payments yet"
             >
             <template #default="{ row: payment }">
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{{ formatMoney(payment.amount) }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(payment.created_at) }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm">
+              <td :class="paymentAmountCellClass">
+                {{ formatMoney(payment.amount) }}
+              </td>
+              <td :class="paymentDateCellClass">
+                {{ formatDate(payment.created_at) }}
+              </td>
+              <td :class="paymentActionsCellClass">
                 <Tooltip v-if="canReversePayment" text="Reverse Payment">
                   <button
                     @click="handleReversePayment(payment.id)"
                     :disabled="reversing === payment.id"
-                    class="p-1.5 text-red-600 hover:text-red-900 hover:bg-red-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    :class="reverseButtonClass"
                     type="button"
                   >
-                    <Icon v-if="reversing === payment.id" icon="mdi:loading" class="w-5 h-5 animate-spin" />
-                    <Icon v-else icon="mdi:restore" class="w-5 h-5" />
+                    <Icon
+                      v-if="reversing === payment.id"
+                      icon="mdi:loading"
+                      :class="reverseLoadingIconClass"
+                    />
+                    <Icon v-else icon="mdi:restore" :class="reverseIconClass" />
                   </button>
                 </Tooltip>
               </td>
-              <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-500 bg-gray-100 text-right w-20">
+              <td :class="paymentIdCellClass">
                 {{ payment.id }}
               </td>
             </template>
@@ -139,6 +143,7 @@
 <script setup>
 import { onMounted, watch } from 'vue'
 import { Icon } from '@iconify/vue'
+import { css } from '../../../../styled-system/css'
 import Loading from '@/components/Loading.vue'
 import Button from '@/components/Button.vue'
 import ConfirmModal from '@/components/ConfirmModal.vue'
@@ -197,4 +202,173 @@ const {
   getStateBadgeClass,
   getStatusColor,
 } = vm
+
+const cardClass = css({
+  backgroundColor: 'white',
+  borderRadius: '0.75rem',
+  boxShadow: '0 1px 2px rgba(15, 23, 42, 0.08)',
+  padding: '1.5rem',
+})
+
+const headerClass = css({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '1.5rem',
+  gap: '1rem',
+  flexWrap: 'wrap',
+})
+
+const headerLeftClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  flexWrap: 'wrap',
+  gap: '1rem',
+})
+
+const backButtonClass = css({
+  padding: '0.5rem',
+  borderRadius: '0.375rem',
+  border: 'none',
+  cursor: 'pointer',
+  color: 'rgb(75, 85, 99)',
+  backgroundColor: 'transparent',
+  transitionProperty: 'background-color, color',
+  transitionDuration: '150ms',
+  _hover: {
+    color: 'rgb(17, 24, 39)',
+    backgroundColor: 'rgb(243, 244, 246)',
+  },
+})
+
+const backIconClass = css({
+  width: '1.25rem',
+  height: '1.25rem',
+})
+
+const headerTitleWrapperClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.5rem',
+})
+
+const headerIconClass = css({
+  width: '1.5rem',
+  height: '1.5rem',
+  color: 'rgb(37, 99, 235)',
+})
+
+const headerTitleClass = css({
+  fontSize: '1.5rem',
+  fontWeight: 700,
+  color: 'rgb(37, 99, 235)',
+})
+
+const headerActionsClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.75rem',
+})
+
+const errorClass = css({
+  textAlign: 'center',
+  paddingBlock: '2rem',
+  color: 'rgb(220, 38, 38)',
+})
+
+const statsGridClass = css({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(1, minmax(0, 1fr))',
+  gap: '1rem',
+  marginBottom: '1.5rem',
+  '@media (min-width: 768px)': {
+    gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+  },
+})
+
+const statusBadgeBaseClass = css({
+  paddingInline: '0.75rem',
+  paddingBlock: '0.25rem',
+  fontSize: '0.875rem',
+  fontWeight: 500,
+  borderRadius: '9999px',
+  display: 'inline-block',
+})
+
+const paymentsCardClass = css({
+  backgroundColor: 'white',
+  borderRadius: '0.75rem',
+  boxShadow: '0 1px 2px rgba(15, 23, 42, 0.08)',
+  overflowX: 'auto',
+  marginTop: '1.5rem',
+})
+
+const paymentCellBase = {
+  paddingInline: '1.5rem',
+  paddingBlock: '1rem',
+  fontSize: '0.875rem',
+  whiteSpace: 'nowrap',
+}
+
+const paymentAmountCellClass = css({
+  ...paymentCellBase,
+  fontWeight: 600,
+  color: 'rgb(17, 24, 39)',
+})
+
+const paymentDateCellClass = css({
+  ...paymentCellBase,
+  color: 'rgb(107, 114, 128)',
+})
+
+const paymentActionsCellClass = css({
+  ...paymentCellBase,
+})
+
+const reverseButtonClass = css({
+  padding: '0.375rem',
+  borderRadius: '0.375rem',
+  border: 'none',
+  cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: 'rgb(220, 38, 38)',
+  backgroundColor: 'transparent',
+  transitionProperty: 'background-color, color',
+  transitionDuration: '150ms',
+  _hover: {
+    color: 'rgb(185, 28, 28)',
+    backgroundColor: 'rgba(248, 113, 113, 0.12)',
+  },
+  _disabled: {
+    opacity: 0.5,
+    cursor: 'not-allowed',
+  },
+})
+
+const reverseIconBase = {
+  width: '1.25rem',
+  height: '1.25rem',
+}
+
+const reverseIconClass = css({
+  ...reverseIconBase,
+})
+
+const reverseLoadingIconClass = css({
+  ...reverseIconBase,
+  animation: 'spin 1s linear infinite',
+})
+
+const paymentIdCellClass = css({
+  paddingInline: '1.25rem',
+  paddingBlock: '1rem',
+  fontSize: '0.875rem',
+  color: 'rgb(107, 114, 128)',
+  backgroundColor: 'rgb(243, 244, 246)',
+  textAlign: 'right',
+  whiteSpace: 'nowrap',
+  width: '5rem',
+})
 </script>

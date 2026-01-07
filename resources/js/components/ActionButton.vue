@@ -2,97 +2,223 @@
   <button
     :type="type"
     :disabled="disabled || loading"
-    :class="[
-      'flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors group relative overflow-hidden',
-      variant === 'blue' 
-        ? 'bg-blue-400 hover:bg-blue-500' 
-        : 'bg-gray-100 hover:bg-gray-200',
-      disabled || loading ? 'opacity-50 cursor-not-allowed' : ''
-    ]"
+    :class="buttonClass"
     :aria-label="ariaLabel"
     :title="title || label"
     @click="handleClick"
   >
-    <span :class="[
-      'text-xs font-medium',
-      variant === 'blue' ? 'text-white' : 'text-gray-700'
-    ]">{{ label }}</span>
-    <div :class="[
-      'flex items-center justify-center w-6 h-6 rounded-full transition-colors',
-      variant === 'blue'
-        ? loading 
-          ? 'bg-blue-600' 
-          : 'bg-blue-600 group-hover:bg-blue-700'
-        : loading 
-          ? 'bg-gray-300' 
-          : 'bg-gray-300 group-hover:bg-gray-400'
-    ]">
-      <Icon 
-        v-if="loading" 
-        icon="mdi:loading" 
-        :class="[
-          'w-3.5 h-3.5 animate-spin',
-          variant === 'blue' ? 'text-white' : 'text-gray-700'
-        ]"
-        aria-hidden="true" 
+    <span :class="labelClass">{{ label }}</span>
+    <div :class="iconWrapperClass">
+      <Icon
+        v-if="loading"
+        icon="mdi:loading"
+        :class="loadingIconClass"
+        aria-hidden="true"
       />
-      <Icon 
-        v-else 
-        :icon="icon" 
-        :class="[
-          'w-3.5 h-3.5',
-          variant === 'blue' ? 'text-white' : 'text-gray-700'
-        ]"
-        aria-hidden="true" 
+      <Icon
+        v-else
+        :icon="icon"
+        :class="iconClass"
+        aria-hidden="true"
       />
     </div>
-    <div :class="[
-      'absolute inset-0 bg-gradient-to-r from-transparent via-transparent pointer-events-none',
-      variant === 'blue' ? 'to-blue-500' : 'to-gray-200'
-    ]"></div>
+    <div :class="overlayClass"></div>
   </button>
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { Icon } from '@iconify/vue'
+import { cva, css } from '../../../styled-system/css'
 
 const props = defineProps({
   label: {
     type: String,
-    required: true
+    required: true,
   },
   icon: {
     type: String,
-    required: true
+    required: true,
   },
   type: {
     type: String,
-    default: 'button'
+    default: 'button',
   },
   variant: {
     type: String,
     default: 'gray',
-    validator: (value) => ['gray', 'blue'].includes(value)
+    validator: (value) => ['gray', 'blue'].includes(value),
   },
   disabled: {
     type: Boolean,
-    default: false
+    default: false,
   },
   loading: {
     type: Boolean,
-    default: false
+    default: false,
   },
   ariaLabel: {
     type: String,
-    default: ''
+    default: '',
   },
   title: {
     type: String,
-    default: ''
-  }
+    default: '',
+  },
 })
 
 const emit = defineEmits(['click'])
+
+const buttonStyle = cva({
+  base: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    paddingInline: '0.75rem',
+    paddingBlock: '0.375rem',
+    borderRadius: '9999px',
+    position: 'relative',
+    overflow: 'hidden',
+    transitionProperty: 'background-color, color, border-color, box-shadow',
+    transitionDuration: '150ms',
+  },
+  variants: {
+    variant: {
+      blue: {
+        backgroundColor: 'rgb(96, 165, 250)',
+        _hover: {
+          backgroundColor: 'rgb(59, 130, 246)',
+        },
+      },
+      gray: {
+        backgroundColor: 'rgb(243, 244, 246)',
+        _hover: {
+          backgroundColor: 'rgb(229, 231, 235)',
+        },
+      },
+    },
+    state: {
+      default: {},
+      disabled: {
+        opacity: 0.5,
+        cursor: 'not-allowed',
+      },
+    },
+  },
+  defaultVariants: {
+    variant: 'gray',
+    state: 'default',
+  },
+})
+
+const labelStyle = cva({
+  base: {
+    fontSize: '0.75rem',
+    fontWeight: 500,
+  },
+  variants: {
+    variant: {
+      blue: {
+        color: 'white',
+      },
+      gray: {
+        color: 'rgb(55, 65, 81)',
+      },
+    },
+  },
+  defaultVariants: {
+    variant: 'gray',
+  },
+})
+
+const iconWrapperStyle = cva({
+  base: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '1.5rem',
+    height: '1.5rem',
+    borderRadius: '9999px',
+    transitionProperty: 'background-color, color, border-color, box-shadow',
+    transitionDuration: '150ms',
+  },
+  variants: {
+    variant: {
+      blue: {
+        backgroundColor: 'rgb(37, 99, 235)',
+      },
+      gray: {
+        backgroundColor: 'rgb(209, 213, 219)',
+      },
+    },
+  },
+  defaultVariants: {
+    variant: 'gray',
+  },
+})
+
+const baseIconClass = css({
+  width: '0.875rem',
+  height: '0.875rem',
+})
+
+const blueIconClass = css({
+  color: 'white',
+})
+
+const grayIconClass = css({
+  color: 'rgb(55, 65, 81)',
+})
+
+const loadingIconExtraClass = css({
+  animation: 'spin 1s linear infinite',
+})
+
+const overlayBlueClass = css({
+  position: 'absolute',
+  inset: 0,
+  pointerEvents: 'none',
+  backgroundImage: 'linear-gradient(to right, transparent, transparent, rgba(59, 130, 246, 0.4))',
+})
+
+const overlayGrayClass = css({
+  position: 'absolute',
+  inset: 0,
+  pointerEvents: 'none',
+  backgroundImage: 'linear-gradient(to right, transparent, rgba(229, 231, 235, 0.6))',
+})
+
+const buttonClass = computed(() =>
+  buttonStyle({
+    variant: props.variant,
+    state: props.disabled || props.loading ? 'disabled' : 'default',
+  }),
+)
+
+const labelClass = computed(() =>
+  labelStyle({
+    variant: props.variant,
+  }),
+)
+
+const iconWrapperClass = computed(() =>
+  iconWrapperStyle({
+    variant: props.variant,
+  }),
+)
+
+const iconClass = computed(() => {
+  if (props.variant === 'blue') {
+    return [baseIconClass, blueIconClass]
+  }
+  return [baseIconClass, grayIconClass]
+})
+
+const loadingIconClass = computed(() => [iconClass.value, loadingIconExtraClass])
+
+const overlayClass = computed(() =>
+  props.variant === 'blue' ? overlayBlueClass : overlayGrayClass,
+)
 
 function handleClick(event) {
   if (!props.disabled && !props.loading) {

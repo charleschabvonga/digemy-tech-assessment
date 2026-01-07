@@ -1,14 +1,54 @@
 <template>
-  <div class="flex items-center gap-2">
-    <div class="relative flex items-center justify-center w-12 h-12 bg-blue-600 rounded-lg overflow-hidden">
-      <Icon icon="mdi:file-document" class="w-7 h-7 text-white relative z-10" />
-      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-blue-800 pointer-events-none"></div>
+  <div :class="containerClass">
+    <div :class="iconWrapperClass">
+      <Icon icon="mdi:file-document" :class="iconClass" />
+      <div :class="iconOverlayClass"></div>
     </div>
-    <span class="text-2xl font-bold text-gray-900">InvoiceHub</span>
+    <span :class="textClass">InvoiceHub</span>
   </div>
 </template>
 
 <script setup>
 import { Icon } from '@iconify/vue'
-</script>
+import { css } from '../../../styled-system/css'
 
+const containerClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.5rem',
+})
+
+const iconWrapperClass = css({
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: '3rem',
+  height: '3rem',
+  borderRadius: '0.75rem',
+  backgroundColor: 'rgb(37, 99, 235)',
+  overflow: 'hidden',
+})
+
+const iconClass = css({
+  width: '1.75rem',
+  height: '1.75rem',
+  color: 'white',
+  position: 'relative',
+  zIndex: 10,
+})
+
+const iconOverlayClass = css({
+  position: 'absolute',
+  inset: 0,
+  backgroundImage:
+    'linear-gradient(to right, transparent, transparent, rgba(30, 64, 175, 0.9))',
+  pointerEvents: 'none',
+})
+
+const textClass = css({
+  fontSize: '1.5rem',
+  fontWeight: 700,
+  color: 'rgb(15, 23, 42)',
+})
+</script>

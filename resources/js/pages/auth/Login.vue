@@ -4,40 +4,40 @@
     title="Welcome back"
     subtitle="Sign in to your account to continue"
   >
-    <form @submit.prevent="handleSubmit" class="space-y-4">
-        <div v-if="error" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+    <form @submit.prevent="handleSubmit" :class="formClass">
+        <div v-if="error" :class="errorClass">
           {{ error }}
         </div>
         
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Icon icon="mdi:account" class="h-5 w-5 text-gray-400" />
+        <div :class="fieldWrapperClass">
+          <div :class="iconWrapperClass">
+            <Icon icon="mdi:account" :class="iconClass" />
           </div>
           <input
             id="email"
             v-model="email"
             type="email"
             required
-            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            :class="inputClass"
             placeholder="username"
           />
         </div>
         
-        <div class="relative">
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Icon icon="mdi:lock" class="h-5 w-5 text-gray-400" />
+        <div :class="fieldWrapperClass">
+          <div :class="iconWrapperClass">
+            <Icon icon="mdi:lock" :class="iconClass" />
           </div>
           <input
             id="password"
             v-model="password"
             type="password"
             required
-            class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            :class="inputClass"
             placeholder="password"
           />
         </div>
         
-        <div class="flex justify-center">
+        <div :class="actionsClass">
           <ActionButton
             type="submit"
             :loading="loading"
@@ -49,10 +49,10 @@
           />
         </div>
 
-        <div class="text-center mt-4">
-          <p class="text-sm text-gray-600">
+        <div :class="bottomTextWrapperClass">
+          <p :class="bottomTextClass">
             Don't have an account?
-            <router-link to="/signup" class="font-medium text-blue-600 hover:text-blue-500">
+            <router-link to="/signup" :class="linkClass">
               Sign up
             </router-link>
           </p>
@@ -65,6 +65,7 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Icon } from '@iconify/vue'
+import { css } from '../../../../styled-system/css'
 import ActionButton from '@/components/ActionButton.vue'
 import { useAuth } from '@/composables/useAuth'
 import { useToast } from '@/components/ui/toast/use-toast'
@@ -79,6 +80,84 @@ const email = ref('')
 const password = ref('')
 const loading = ref(false)
 const error = ref('')
+
+const formClass = css({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1rem',
+})
+
+const errorClass = css({
+  backgroundColor: 'rgb(254, 242, 242)',
+  borderWidth: '1px',
+  borderColor: 'rgb(254, 202, 202)',
+  color: 'rgb(185, 28, 28)',
+  paddingInline: '1rem',
+  paddingBlock: '0.75rem',
+  borderRadius: '0.375rem',
+  fontSize: '0.875rem',
+})
+
+const fieldWrapperClass = css({
+  position: 'relative',
+})
+
+const iconWrapperClass = css({
+  position: 'absolute',
+  insetBlock: 0,
+  insetInlineStart: 0,
+  paddingInlineStart: '0.75rem',
+  display: 'flex',
+  alignItems: 'center',
+  pointerEvents: 'none',
+})
+
+const iconClass = css({
+  width: '1.25rem',
+  height: '1.25rem',
+  color: 'rgb(156, 163, 175)',
+})
+
+const inputClass = css({
+  width: '100%',
+  paddingInlineStart: '2.5rem',
+  paddingInlineEnd: '0.75rem',
+  paddingBlock: '0.5rem',
+  borderWidth: '1px',
+  borderColor: 'rgb(209, 213, 219)',
+  borderRadius: '0.375rem',
+  fontSize: '0.875rem',
+  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+  outline: 'none',
+  _focus: {
+    outline: 'none',
+    boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.5)',
+    borderColor: 'rgb(59, 130, 246)',
+  },
+})
+
+const actionsClass = css({
+  display: 'flex',
+  justifyContent: 'center',
+})
+
+const bottomTextWrapperClass = css({
+  marginTop: '1rem',
+  textAlign: 'center',
+})
+
+const bottomTextClass = css({
+  fontSize: '0.875rem',
+  color: 'rgb(75, 85, 99)',
+})
+
+const linkClass = css({
+  fontWeight: 500,
+  color: 'rgb(37, 99, 235)',
+  _hover: {
+    color: 'rgb(59, 130, 246)',
+  },
+})
 
 async function handleSubmit() {
   error.value = ''

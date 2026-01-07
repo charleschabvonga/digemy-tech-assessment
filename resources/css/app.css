@@ -1,7 +1,35 @@
-/* Font Awesome */
 @import '@fortawesome/fontawesome-free/css/all.css';
+@import '../../styled-system/styles.css';
+@layer reset, base, tokens, recipes, utilities;
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
 
+@keyframes progress {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.toast-enter-active,
+.toast-leave-active {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.toast-enter-from,
+.toast-leave-to {
+    opacity: 0;
+    transform: translateX(100%);
+}
+
+.toast-enter-to,
+.toast-leave-from {
+    opacity: 1;
+    transform: translateX(0);
+}

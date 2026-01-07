@@ -1,64 +1,49 @@
 <template>
   <Transition
     appear
-    enter-active-class="transition-all duration-300 ease-out"
-    enter-from-class="translate-x-full opacity-0"
-    enter-to-class="translate-x-0 opacity-100"
-    leave-active-class="transition-all duration-200 ease-in"
-    leave-from-class="translate-x-0 opacity-100"
-    leave-to-class="translate-x-full opacity-0"
+    enter-active-class="toast-enter-active"
+    enter-from-class="toast-enter-from"
+    enter-to-class="toast-enter-to"
+    leave-active-class="toast-leave-active"
+    leave-from-class="toast-leave-from"
+    leave-to-class="toast-leave-to"
   >
     <div
       v-if="visible"
-      :class="[
-        'group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all',
-        variant === 'destructive'
-          ? 'border-red-500 bg-red-50 text-red-900'
-          : 'border-gray-200 bg-white text-gray-950'
-      ]"
+      :class="[toastClass, variant === 'destructive' ? toastDestructiveClass : toastDefaultClass]"
     >
-      <div class="flex items-start gap-3">
+      <div :class="contentWrapperClass">
         <Icon
           :icon="variant === 'destructive' ? 'mdi:alert-circle' : 'mdi:check-circle'"
-          :class="[
-            'flex-shrink-0 mt-0.5',
-            variant === 'destructive' ? 'text-red-600' : 'text-green-600'
-          ]"
-          class="w-5 h-5"
+          :class="variant === 'destructive' ? iconDestructiveClass : iconSuccessClass"
         />
-        <div class="grid gap-1 flex-1">
-          <div v-if="title" class="text-sm font-semibold">
+        <div :class="textWrapperClass">
+          <div v-if="title" :class="titleClass">
             {{ title }}
           </div>
-          <div v-if="description" :class="[
-            'text-sm opacity-90',
-            variant === 'destructive' ? 'text-red-800' : 'text-gray-500'
-          ]">
+          <div
+            v-if="description"
+            :class="[descriptionBaseClass, variant === 'destructive' ? descriptionDestructiveClass : descriptionDefaultClass]"
+          >
             {{ description }}
           </div>
         </div>
       </div>
-      <div class="flex items-center gap-2">
+      <div :class="actionsWrapperClass">
         <button
           v-if="action"
+          type="button"
           @click="action.onClick"
-          :class="[
-            'inline-flex h-8 shrink-0 items-center justify-center rounded-md border px-3 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
-            variant === 'destructive'
-              ? 'border-red-500 bg-transparent text-red-900 hover:bg-red-100 focus:ring-red-500'
-              : 'border-gray-200 bg-transparent text-gray-900 hover:bg-gray-100 focus:ring-gray-950'
-          ]"
+          :class="variant === 'destructive' ? actionDestructiveClass : actionDefaultClass"
         >
           {{ action.label }}
         </button>
         <button
-          @click="dismiss"
-          :class="[
-            'absolute right-2 top-2 rounded-md p-1 text-gray-950/50 opacity-0 transition-opacity hover:text-gray-950 focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100',
-            variant === 'destructive' ? 'text-red-900/50 hover:text-red-900' : 'text-gray-950/50 hover:text-gray-950'
-          ]"
+          type="button"
+          :class="closeButtonClass"
+          @click="handleDismiss"
         >
-          <Icon icon="mdi:close" class="h-4 w-4" />
+          <Icon icon="mdi:close" :class="closeIconClass" />
         </button>
       </div>
     </div>
@@ -66,51 +51,196 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { Icon } from '@iconify/vue';
-import { useToast } from './use-toast.js';
+import { ref, onMounted } from 'vue'
+import { Icon } from '@iconify/vue'
+import { css } from '../../../../../styled-system/css'
+import { useToast } from './use-toast.js'
 
 const props = defineProps({
   id: {
     type: String,
-    required: true
+    required: true,
   },
-  title: {
+    title: {
     type: String,
-    default: ''
+    default: '',
   },
   description: {
     type: String,
-    default: ''
+    default: '',
   },
   action: {
     type: Object,
-    default: null
+    default: null,
   },
   variant: {
     type: String,
     default: 'default',
-    validator: (value) => ['default', 'destructive'].includes(value)
+    validator: value => ['default', 'destructive'].includes(value),
   },
   duration: {
     type: Number,
-    default: 3000
-  }
-});
+    default: 3000,
+  },
+})
 
-const { dismiss } = useToast();
-const visible = ref(true);
+const { dismiss } = useToast()
+const visible = ref(true)
+
+function handleDismiss() {
+  visible.value = false
+  setTimeout(() => {
+    dismiss(props.id)
+  }, 150)
+}
 
 onMounted(() => {
-  const duration = props.duration || 3000;
+  const duration = props.duration || 3000
   if (duration > 0) {
     setTimeout(() => {
-      visible.value = false;
-      setTimeout(() => {
-        dismiss(props.id);
-      }, 200);
-    }, duration);
+      handleDismiss()
+    }, duration)
   }
-});
-</script>
+})
 
+const toastClass = css({
+  pointerEvents: 'auto',
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  columnGap: '1rem',
+  width: '100%',
+  overflow: 'hidden',
+  borderRadius: '0.375rem',
+  borderWidth: '1px',
+  paddingInline: '1.5rem',
+  paddingBlock: '1.5rem',
+  boxShadow: '0 10px 25px rgba(15, 23, 42, 0.2)',
+  transitionProperty: 'opacity, transform',
+  transitionDuration: '200ms',
+})
+
+const toastDefaultClass = css({
+  borderColor: 'rgb(229, 231, 235)',
+  backgroundColor: 'white',
+  color: 'rgb(12, 10, 9)',
+})
+
+const toastDestructiveClass = css({
+  borderColor: 'rgb(239, 68, 68)',
+  backgroundColor: 'rgb(254, 242, 242)',
+  color: 'rgb(127, 29, 29)',
+})
+
+const contentWrapperClass = css({
+  display: 'flex',
+  alignItems: 'flex-start',
+  columnGap: '0.75rem',
+})
+
+const iconBaseClass = css({
+  flexShrink: 0,
+  marginTop: '0.125rem',
+  width: '1.25rem',
+  height: '1.25rem',
+})
+
+const iconSuccessClass = css({
+  ...iconBaseClass,
+  color: 'rgb(22, 163, 74)',
+})
+
+const iconDestructiveClass = css({
+  ...iconBaseClass,
+  color: 'rgb(220, 38, 38)',
+})
+
+const textWrapperClass = css({
+  display: 'grid',
+  rowGap: '0.25rem',
+  flex: 1,
+})
+
+const titleClass = css({
+  fontSize: '0.875rem',
+  fontWeight: 600,
+})
+
+const descriptionBaseClass = css({
+  fontSize: '0.875rem',
+  opacity: 0.9,
+})
+
+const descriptionDefaultClass = css({
+  color: 'rgb(107, 114, 128)',
+})
+
+const descriptionDestructiveClass = css({
+  color: 'rgb(153, 27, 27)',
+})
+
+const actionsWrapperClass = css({
+  display: 'flex',
+  alignItems: 'center',
+  columnGap: '0.5rem',
+})
+
+const actionBaseClass = css({
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  height: '2rem',
+  paddingInline: '0.75rem',
+  borderRadius: '0.375rem',
+  fontSize: '0.75rem',
+  fontWeight: 500,
+  borderWidth: '1px',
+  backgroundColor: 'transparent',
+  cursor: 'pointer',
+  outline: 'none',
+  transitionProperty: 'background-color, color, border-color',
+  transitionDuration: '150ms',
+})
+
+const actionDefaultClass = css({
+  ...actionBaseClass,
+  borderColor: 'rgb(229, 231, 235)',
+  color: 'rgb(17, 24, 39)',
+  _hover: {
+    backgroundColor: 'rgb(243, 244, 246)',
+  },
+})
+
+const actionDestructiveClass = css({
+  ...actionBaseClass,
+  borderColor: 'rgb(239, 68, 68)',
+  color: 'rgb(127, 29, 29)',
+  _hover: {
+    backgroundColor: 'rgb(254, 226, 226)',
+  },
+})
+
+const closeButtonClass = css({
+  position: 'absolute',
+  insetBlockStart: '0.5rem',
+  insetInlineEnd: '0.5rem',
+  padding: '0.25rem',
+  borderRadius: '0.375rem',
+  border: 'none',
+  cursor: 'pointer',
+  color: 'rgba(12, 10, 9, 0.5)',
+  backgroundColor: 'transparent',
+  transitionProperty: 'color, opacity',
+  transitionDuration: '150ms',
+  _hover: {
+    color: 'rgb(12, 10, 9)',
+    opacity: 1,
+  },
+})
+
+const closeIconClass = css({
+  width: '1rem',
+  height: '1rem',
+})
+</script>

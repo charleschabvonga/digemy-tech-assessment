@@ -1,15 +1,80 @@
-// State badge and color utilities
+import { css } from '../../../styled-system/css'
+
+const badgeClasses = {
+  success: css({
+    backgroundColor: 'rgb(220, 252, 231)',
+    color: 'rgb(22, 163, 74)',
+    paddingInline: '0.75rem',
+    paddingBlock: '0.25rem',
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    display: 'inline-block',
+  }),
+  danger: css({
+    backgroundColor: 'rgb(254, 226, 226)',
+    color: 'rgb(185, 28, 28)',
+    paddingInline: '0.75rem',
+    paddingBlock: '0.25rem',
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    display: 'inline-block',
+  }),
+  warning: css({
+    backgroundColor: 'rgb(254, 243, 199)',
+    color: 'rgb(161, 98, 7)',
+    paddingInline: '0.75rem',
+    paddingBlock: '0.25rem',
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    display: 'inline-block',
+  }),
+  info: css({
+    backgroundColor: 'rgb(219, 234, 254)',
+    color: 'rgb(37, 99, 235)',
+    paddingInline: '0.75rem',
+    paddingBlock: '0.25rem',
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    display: 'inline-block',
+  }),
+  primary: css({
+    backgroundColor: 'rgb(224, 231, 255)',
+    color: 'rgb(79, 70, 229)',
+    paddingInline: '0.75rem',
+    paddingBlock: '0.25rem',
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    display: 'inline-block',
+  }),
+  secondary: css({
+    backgroundColor: 'rgb(243, 244, 246)',
+    color: 'rgb(75, 85, 99)',
+    paddingInline: '0.75rem',
+    paddingBlock: '0.25rem',
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    display: 'inline-block',
+  }),
+  general: css({
+    backgroundColor: 'rgb(243, 244, 246)',
+    color: 'rgb(75, 85, 99)',
+    paddingInline: '0.75rem',
+    paddingBlock: '0.25rem',
+    borderRadius: '9999px',
+    fontSize: '0.875rem',
+    fontWeight: 500,
+    display: 'inline-block',
+  }),
+}
+
 export function getStateBadgeClass(intent) {
-  const classes = {
-    success: 'bg-green-100 text-green-800',
-    danger: 'bg-red-100 text-red-800',
-    warning: 'bg-yellow-100 text-yellow-800',
-    info: 'bg-blue-100 text-blue-800',
-    primary: 'bg-indigo-100 text-indigo-800',
-    secondary: 'bg-gray-100 text-gray-800',
-    general: 'bg-gray-100 text-gray-800',
-  }
-  return classes[intent] || classes.general
+  return badgeClasses[intent] || badgeClasses.general
 }
 
 export function getStatusColor(intent) {
@@ -24,4 +89,3 @@ export function getStatusColor(intent) {
   }
   return colors[intent] || 'gray'
 }
-
